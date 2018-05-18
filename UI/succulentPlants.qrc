@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/query.png</file>
+    <file>icons/query_def.png</file>
+  </qresource>
+</RCC>

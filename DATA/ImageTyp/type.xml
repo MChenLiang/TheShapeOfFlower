@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<typeSpecification author="miaochenliang" data="2018-05-13 23:03:10">
+		<Type name="菊科植物"/>
+		<Type name="藤本植物"/>
+		<Type name="观叶盆栽"/>
+		<Type name="兰科植物"/>
+		<Type name="多肉植物">
+			<genera name="番杏科(Aizoaceae)"/>
+			<genera name="景天科(Crassulaceae)"/>
+			<genera name="仙人掌类"/>
+		</Type>
+		<Type name="一二年生花卉"/>
+		<Type name="水生花卉"/>
+		<Type name="蕨类植物"/>
+		<Type name="盆景图片"/>
+		<Type name="常绿花木"/>
+		<Type name="看图识花"/>
+		<Type name="球根花卉"/>
+		<Type name="宿根花卉"/>
+		<Type name="观花植物">
+			<genera name="月季花图片"/>
+			<genera name="天竺葵图片"/>
+		</Type>
+	</typeSpecification>
