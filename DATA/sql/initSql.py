@@ -6,6 +6,7 @@ __author__ = 'miaochenliang'
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import os
+import json
 import sqlite3
 
 """
@@ -85,7 +86,7 @@ class ctSql(object):
 
     def insertItem(self, **kwargs):
         tempKStr = ', '.join(kwargs.keys())
-        tempVStr = ', '.join('"{}"'.format(_) for _ in kwargs.values())
+        tempVStr = ', '.join(str('"%s"') % _ for _ in kwargs.values())
         kStr = '(' + tempKStr + ')'
         vStr = '(' + tempVStr + ')'
         sql = """INSERT INTO {0} {1} VALUES {2}""".format(self.__table_name, kStr, vStr)

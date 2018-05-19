@@ -12,19 +12,19 @@ from functools import partial
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import editConf
 import baseEnv
+import editConf
 import initUI
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-import existsUI as exUI
-from UI import UI_succulentPlants
+import myThread
 from DATA import typeEdit
-from DATA import sqlEdit
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+from UI import UI_succulentPlants
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 reload(initUI)
 reload(UI_succulentPlants)
 reload(typeEdit)
+reload(myThread)
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import __init__
@@ -46,8 +46,8 @@ class openUI(QMainWindow):
     def __init__(self, parent=None):
         super(openUI, self).__init__(parent)
         self.UI()
-        self.all_item = list()
-        self.sql = sqlEdit.sqlEdit()
+        self.allSel = list()
+        self.imageDict = dict()
 
     # UI log in +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     def UI(self):
@@ -55,13 +55,6 @@ class openUI(QMainWindow):
         self.win = UI_succulentPlants.Ui_Form()
         self.win.setupUi(self.pt)
         self.setCentralWidget(self.pt)
-
-        # self.mLabel = QLabel(self)
-        # self.mLabel.setPixmap(QPixmap(icon_path('query.png')))
-        # self.mLabel.setScaledContents(True)
-
-        # self.st_size = self.pt.size()
-        # self.setFixedSize(self.st_size.width(), self.st_size.height())
 
         self.setWindowTitle(__win_name__)
         self.setObjectName(__win_name__)
@@ -84,8 +77,6 @@ class openUI(QMainWindow):
         self.objWidget = self.widget_other.objWidget
         self.pageW = self.objWidget.pageW
 
-        self.add_item('')
-
         # tree_asset
         tree_type = self.win.treeView_type
         self.type_model = QStandardItemModel(tree_type)
@@ -95,6 +86,7 @@ class openUI(QMainWindow):
         tree_type.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         self.default_type_model()
+
 
     def default_type_model(self):
         self.type_model.clear()
@@ -130,11 +122,15 @@ class openUI(QMainWindow):
         str_p = index.parent().data(0).toString()
         selStr = '{0}->{1}'.format(str_p, str_sel) if str_p else str_sel
 
-        beG = """typeG like "%{0}%" """.format(selStr)
-        self.sql.queryItem(beG)
+        isUpdate = False
+        if selStr not in self.allSel:
+            self.allSel.append(selStr)
+            isUpdate = True
 
-    def get_all_type(self):
-        pass
+        beG = """typeG like "%{0}%" """.format(selStr)
+        self.t = myThread.setItem(self, beG, isUpdate=isUpdate)
+        self.t.start()
+
 
     def init_asset_menu(self):
         self.win.widget_asset.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -206,21 +202,26 @@ class openUI(QMainWindow):
         page = int(self.pageW.comboBoxNum.currentText())
         max_num = self.all_item.__len__()
         showItem = self.all_item[(page - 1) * sep: max_num if page * sep > max_num else page * sep]
-        self.add_item(showItem="")
+        # self.add_item(showItem="")
 
-    def add_item(self, showItem):
+    def add_item(self, messageList):
         widget = self.widget_other.objWidget
-        for i in range(100):
-            wgt = initUI.image_widget(str(i))
-            wgt.clicked.connect(partial(self.set_image, wgt))
-            widget.add_widget(wgt)
+        for i in messageList:
+            if widget.Image_widget_list.has_key(i[0]):
+                widget.Image_widget_list[i[0]].update(*i)
+            else:
+                wgt = initUI.image_widget(*i)
+                wgt.clicked.connect(partial(self.set_image, wgt))
+                widget.add_widget(wgt)
+                wgt.show()
+
         pass
 
     def getItem(self):
         pass
 
     def set_image(self, wgt):
-        print wgt.thumb
+        print wgt.id
         # self.win.label_image.setPixmap(QPixmap(image_path))
 
 
@@ -230,8 +231,10 @@ if __name__ == '__main__':
     anim_path = icon_path('waiting.gif')
     # 加载主程序
     Form = openUI()
-    splash = exUI.mSplashScreen_new(anim_path, Qt.WindowStaysOnTopHint, Form)
-    splash.show()
-    # 添加提示信息
-    splash.showMessage('author : %s' % __author__, Qt.AlignLeft | Qt.AlignBottom, Qt.yellow)
+    # splash = exUI.mSplashScreen_new(anim_path, Qt.WindowStaysOnTopHint, Form)
+    # splash.show()
+    # # 添加提示信息
+    # splash.showMessage('author : %s' % __author__, Qt.AlignLeft | Qt.AlignBottom, Qt.yellow)
+    Form.show()
     sys.exit(app.exec_())
+

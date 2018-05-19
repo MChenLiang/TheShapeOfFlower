@@ -27,6 +27,7 @@ User-Agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like G
 """
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import os
+import re
 import sys
 import json
 import urllib2
@@ -43,7 +44,7 @@ import pinyinMaster.pinyin as py
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 reload(sys)
-sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding('utf-8')
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 all_agent = bcmds.agent()
@@ -71,12 +72,12 @@ def main():
     for each in getAllUrlStr():
         getMessage(each, sql)
 
-    # sql = sqlEdit.sqlEdit
-    # pool = multiprocessing.Pool()
-    # for each in getAllUrlStr():
-    #     pool.apply_async(getMessage, args=(each, sql,))
-    # pool.close()
-    # pool.join()
+        # sql = sqlEdit.sqlEdit
+        # pool = multiprocessing.Pool()
+        # for each in getAllUrlStr():
+        #     pool.apply_async(getMessage, args=(each, sql,))
+        # pool.close()
+        # pool.join()
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -104,7 +105,7 @@ class getMessage(object):
                 k, v = contents
                 val = v.__dict__['contents']
                 val = val[0] if val.__len__() else ''
-                mDict.setdefault(k.decode('utf-8'), val.replace('"', "'"))
+                mDict.setdefault(k, val.replace('"', "'"))
 
             mDict.setdefault(u'intro：', str(bsObj.find('p')).replace('"', "'"))
 
@@ -112,18 +113,23 @@ class getMessage(object):
                 httpImagePath = k.contents[0].contents[0].attrs['src']
                 _, fileName = os.path.split(httpImagePath)
                 fileName = fileName.split(' ')[0]
-                localFPath = os.path.join(dirP, title.split(' ')[0], fileName).replace('\\', '/')
+
+                localFPath = os.path.join(dirP, re.split(' |\(|（', title)[0], fileName).replace('\\', '/')
                 mDict.setdefault(u'image：', list()).append(localFPath)
+                # load image
+
                 r = requests.get(httpImagePath, stream=True)
 
-                # dir_p = os.path.dirname(localFPath)
-                # os.path.exists(dir_p) or os.makedirs(dir_p)
-                #
-                # with open(localFPath, 'wb') as f:
-                #     for chunk in r.iter_content(chunk_size=32):
-                #         f.write(chunk)
+                dir_p = os.path.dirname(localFPath)
+                os.path.exists(dir_p) or os.makedirs(dir_p)
 
-            mDict.setdefault(u'image：', json.dumps(mDict.get(u'image：')))
+                with open(localFPath, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=32):
+                        f.write(chunk)
+
+            val = ';'.join(mDict.get(u'image：'))
+            mDict.pop(u'image：')
+            mDict.setdefault(u'image：', val)
 
             self.message.setdefault(title, mDict)
         #
@@ -142,13 +148,13 @@ class getMessage(object):
             try:
                 for (i, v) in vs.items():
                     kwargs.setdefault(baseEnv.titleMatch[i], v)
-            except :
+            except:
                 break
             else:
                 kwargs.setdefault('spell',
                                   py.PinYin().hanzi2pinyin_split(str=kwargs.get('chineseName'),
                                                                  split=" "))
-                kwargs.setdefault('typeG', '多肉植物;多肉植物->番杏科(Aizoaceae)')
+                kwargs.setdefault('typeG', u'多肉植物;多肉植物->番杏科(Aizoaceae)')
                 self.sql.insertItem(**kwargs)
 
     def get_all_html(self):

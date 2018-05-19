@@ -2,8 +2,9 @@
 # -*- coding:UTF-8 -*-
 __author__ = 'miaochenliang'
 
-import os
 import math
+import os
+import json
 from functools import partial
 
 from PyQt4.QtCore import *
@@ -11,8 +12,13 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import __init__
-import editConf
 import baseEnv
+import editConf
+
+import sys
+
+reload(sys)
+sys.setdefaultencoding('UTF-8')
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 pushbutton_qss = editConf.conf().get(baseEnv.qss, baseEnv.button)
@@ -62,9 +68,8 @@ class list_ui(QWidget):
         spacerItem_dn = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         VLay_alp.addItem(spacerItem_dn)
 
-        self.objWidget = picture_prev()
+        self.objWidget = picture_prev(self)
         HLay.addWidget(self.objWidget)
-        print 'width --- >> ', self.objWidget.width()
 
         self.bt_clicked()
 
@@ -163,7 +168,7 @@ class asset_button(QPushButton):
         self.h(self.widget)
 
 
-class asset_label(QMainWindow):
+class asset_label(QWidget):
     def __init__(self, iconPath, *args):
         super(asset_label, self).__init__(*args)
 
@@ -199,6 +204,7 @@ class asset_label(QMainWindow):
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 class image_widget(QWidget):
+    id = 0
     clicked = pyqtSignal()
     doubleClicked = pyqtSignal()
     prevSelected = None
@@ -208,15 +214,14 @@ class image_widget(QWidget):
     mov_list = ['.mov', '.gif', '.avi']
 
     def __init__(self, *args, **kwargs):
-        super(image_widget, self).__init__()
+        super(image_widget, self).__init__(**kwargs)
         self.thumb = None
-        self.id = 0
         self.version = ''
         self.is_height = 0
         self.selected = False
         self.kwargs = kwargs
 
-        self.image_label = QLabel()
+        self.image_label = QLabel(self)
         size_policy_image = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         size_policy_image.setHorizontalStretch(0)
         size_policy_image.setVerticalStretch(0)
@@ -224,7 +229,7 @@ class image_widget(QWidget):
         self.image_label.setSizePolicy(size_policy_image)
         self.image_label.setScaledContents(1)
 
-        self.text_label = QLabel()
+        self.text_label = QLabel(self)
         self.text_label.setAlignment(Qt.AlignCenter)
         size_policy_text = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         size_policy_image.setHorizontalStretch(0)
@@ -233,7 +238,7 @@ class image_widget(QWidget):
         self.text_label.setSizePolicy(size_policy_text)
 
         if args:
-            self.set_font(args[0])
+            self.update(*args)
 
         lay = QVBoxLayout(self)
         lay.addWidget(self.image_label)
@@ -246,19 +251,26 @@ class image_widget(QWidget):
 
         self.setStyleSheet("QWidget{border:1px solid rgb(50, 50, 50);}")
 
+    def update(self, *args):
+        super(image_widget, self).update()
+        if args:
+            self.id, chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
+            self.set_font(chineseName)
+            imagePath = imagePath.split(';')
+            self.set_in_path(imagePath[0])
+
     def set_in_path(self, in_path):
         self.__in_path__ = in_path.replace('\\', '/')
         self.__flag__ = os.path.splitext(in_path)[-1]
-
         if self.__flag__ in self.jpg_list:
             self.load_image()
         elif self.__flag__ in self.mov_list:
             self.load_mov()
 
     def set_font(self, in_text):
-        font = QFont()
-        font.setPointSize(18)
-        self.text_label.setFont(font)
+        # font = QFont()
+        # font.setPointSize(18)
+        # self.text_label.setFont(font)
         self.text_label.setText(in_text)
 
     def load_image(self):
@@ -323,7 +335,7 @@ class picture_prev(QFrame):
     THUMB_MAX = 256
 
     def __init__(self, *args):
-        super(picture_prev, self).__init__()
+        super(picture_prev, self).__init__(*args)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -335,7 +347,7 @@ class picture_prev(QFrame):
         layout = QVBoxLayout(self)
 
         self.scro = QScrollArea(self)
-        self.item_area = QWidget()
+        self.item_area = QWidget(self.scro)
         self.scro.setWidget(self.item_area)
         self.scro.setStyleSheet("QScrollArea{background-color: rgb(191, 191, 191);}")
         self.item_area.setStyleSheet("QWidget{background-color: rgb(191, 191, 191);}")

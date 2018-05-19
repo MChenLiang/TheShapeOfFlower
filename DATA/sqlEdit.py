@@ -17,7 +17,7 @@ class sqlEdit(object):
         self.cursor = self.ctSql.cursor
 
     def insertItem(self, **kwargs):
-        kwargs.setdefault('ID', str(uuid.uuid1()))
+        kwargs.setdefault('ID', u'%s' % uuid.uuid1())
         # for (k, v) in kwargs.items():
         #     print k, ' -- ', v
         self.ctSql.insertItem(**kwargs)
