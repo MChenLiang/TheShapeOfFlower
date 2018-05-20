@@ -4,7 +4,7 @@ __author__ = 'miaochenliang'
 
 import math
 import os
-import json
+import sys
 from functools import partial
 
 from PyQt4.QtCore import *
@@ -14,8 +14,6 @@ from PyQt4.QtGui import *
 import __init__
 import baseEnv
 import editConf
-
-import sys
 
 reload(sys)
 sys.setdefaultencoding('UTF-8')
@@ -205,7 +203,7 @@ class asset_label(QWidget):
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 class image_widget(QWidget):
     id = 0
-    clicked = pyqtSignal()
+    clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal()
     prevSelected = None
     __in_path__ = ''
@@ -254,6 +252,7 @@ class image_widget(QWidget):
     def update(self, *args):
         super(image_widget, self).update()
         if args:
+            self.args = args
             self.id, chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
             self.set_font(chineseName)
             imagePath = imagePath.split(';')
@@ -292,10 +291,11 @@ class image_widget(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.clicked.emit()
+            self.clicked.emit(True)
             self.setSelected(1)
 
         if event.button() == Qt.MiddleButton:
+            self.clicked.emit(False)
             self.setSelected(0)
 
     def mouseDoubleClickEvent(self, event):
@@ -386,6 +386,7 @@ class picture_prev(QFrame):
         if widgets:
             for widget in widgets:
                 widget.setParent(None)
+                widget.deleteLater()
         self.Image_widget_list.clear()
 
     def add_widget(self, widget):
@@ -400,7 +401,7 @@ class picture_prev(QFrame):
 
     def layout(self):
         w = self.width() - 60
-        widgets = self.item_area.children()
+        widgets = [_ for _ in self.item_area.children()]# if not _.isHidden()]
         num_x = max(math.ceil(w / (self.THUMB_WIDTH + self.asset_space)), 1)  # Can do -1
         num_y = math.ceil(len(widgets) / num_x)
         self.item_area.resize(w, num_y * (self.THUMB_HEIGHT + self.asset_space) + 50)

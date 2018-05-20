@@ -87,7 +87,6 @@ class openUI(QMainWindow):
 
         self.default_type_model()
 
-
     def default_type_model(self):
         self.type_model.clear()
         self.type_model.setHorizontalHeaderLabels([u'分类'])
@@ -130,7 +129,6 @@ class openUI(QMainWindow):
         beG = """typeG like "%{0}%" """.format(selStr)
         self.t = myThread.setItem(self, beG, isUpdate=isUpdate)
         self.t.start()
-
 
     def init_asset_menu(self):
         self.win.widget_asset.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -206,23 +204,48 @@ class openUI(QMainWindow):
 
     def add_item(self, messageList):
         widget = self.widget_other.objWidget
+        widget.clearAll()
+
         for i in messageList:
             if widget.Image_widget_list.has_key(i[0]):
-                widget.Image_widget_list[i[0]].update(*i)
+                wgt = widget.Image_widget_list[i[0]]
+                wgt.update(*i)
             else:
                 wgt = initUI.image_widget(*i)
-                wgt.clicked.connect(partial(self.set_image, wgt))
+                wgt.clicked[int].connect(partial(self.set_image, wgt))
+                # wgt.doubleClicked.connect()
                 widget.add_widget(wgt)
-                wgt.show()
+            wgt.show()
 
-        pass
+        widget.layout()
 
     def getItem(self):
         pass
 
-    def set_image(self, wgt):
-        print wgt.id
-        # self.win.label_image.setPixmap(QPixmap(image_path))
+    def set_image(self, wgt, conf):
+        (idStr,
+         chineseName, spell, otherName, SName,
+         genera,
+         place,
+         description,
+         imagePath,
+         title,
+         typeG) = wgt.args
+        if conf:
+            self.win.label_title.setText(chineseName)
+            self.win.lineEdit_cName.setText(chineseName)
+            self.win.lineEdit_sOther.setText(otherName)
+            self.win.lineEdit_lName.setText(SName)
+            self.win.lineEdit_type.setText(genera)
+            self.win.lineEdit_From.setText(place)
+            self.win.textEdit_intro.setText(description)
+        else:
+            self.win.label_title.setText(u'标题')
+            lList = [self.win.lineEdit_cName, self.win.lineEdit_sOther, self.win.lineEdit_lName,
+                     self.win.lineEdit_type, self.win.lineEdit_From, self.win.textEdit_intro]
+
+            for each in lList:
+                each.clear()
 
 
 # main ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -237,4 +260,3 @@ if __name__ == '__main__':
     # splash.showMessage('author : %s' % __author__, Qt.AlignLeft | Qt.AlignBottom, Qt.yellow)
     Form.show()
     sys.exit(app.exec_())
-

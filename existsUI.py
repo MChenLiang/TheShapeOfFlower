@@ -8,6 +8,14 @@ __author__ = 'miaoChenLiang'
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import __init__
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+__start_path__ = __init__.__start_path__
+
+
+def icon_path(in_name):
+    return os.path.join(__start_path__, 'UI/icons', in_name).replace('\\', '/')
 
 
 # import++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -141,6 +149,9 @@ class Ui_Dialog(QDialog):
             self.c_pos = event.globalPos() - self.pos()
             self.m_pressed = True
 
+        elif event.buttons() == Qt.MiddleButton:
+            self.accept()
+
     def mouseMoveEvent(self, event):
         if event.buttons() == Qt.LeftButton:
             if self.m_pressed:
@@ -184,3 +195,107 @@ class mSplashScreen_new(QSplashScreen):
         widget.show()
         self.deleteLater()
         self.movie.deleteLater()
+
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+class imageDialog(QDialog):
+    def __init__(self, *args, **kwargs):
+        super(imageDialog, self).__init__(**kwargs)
+        self.setMouseTracking(True)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+
+        if not args:
+            self.reject()
+        self.imageList = args
+
+        self.defNum = 0
+        self.labelMap = QLabel(self)
+
+        self.l_P = mLabel(icon_path('dnP.png'), -1)
+        self.l_P.setParent(self)
+        self.r_P = mLabel(icon_path('upP.png'), 1)
+        self.r_P.setParent(self)
+
+        self.changeImage(0)
+
+    def changeImage(self, k):
+        if self.defNum == self.imageList.__len__() - 1:
+            self.defNum = 0
+        elif self.defNum == 0 and k == -1:
+            self.defNum = self.imageList.__len__() - 1
+        else:
+            self.defNum += k
+
+        self.labelMap.setPixmap(QPixmap(self.imageList[self.defNum]))
+        self.image = QImage(self.imageList[self.defNum])
+        x, y = self.image.size().width(), self.image.size().height()
+        self.resize(x + 60, y)
+
+        self.labelMap.setGeometry(30, 0, x, y)
+        self.l_P.setGeometry(0, y / 2.0 - 30, 60, 60)
+        self.r_P.setGeometry(x, y / 2.0 - 30, 60, 60)
+
+    def mousePressEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            self.c_pos = event.globalPos() - self.pos()
+            self.m_pressed = True
+
+        if event.buttons() == Qt.MiddleButton:
+            self.accept()
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            if self.m_pressed:
+                self.move(event.globalPos() - self.c_pos)
+                event.accept()
+
+    def mouseReleaseEvent(self, event):
+        self.m_pressed = False
+
+    def enterEvent(self, event):
+        print 'enter'
+        self.setWindowOpacity(0.8)
+        self.l_P.setWindowOpacity(0.8)
+        # self.r_P.setAttribute(Qt.WA_TranslucentBackground, 0.8)
+        # self.l_P.setAttribute(Qt.WA_TranslucentBackground, 0.8)
+
+    def leaveEvent(self, event):
+        print 'leave'
+        self.setWindowOpacity(0.2)
+        self.l_P.setWindowOpacity(0.2)
+        # self.r_P.setAttribute(Qt.WA_TranslucentBackground, 0.2)
+        # self.l_P.setAttribute(Qt.WA_TranslucentBackground, 0.2)
+
+    def resizeEvent(self, event):
+        self.setAttribute(Qt.WA_TranslucentBackground, 1)
+
+
+class mLabel(QLabel):
+    def __init__(self, image, ID, *args):
+        super(mLabel, self).__init__(*args)
+        self.setPixmap(QPixmap(image))
+        self.setScaledContents(True)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowOpacity(0.5)
+        self.ID = ID
+
+        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.setFixedSize(QSize(60, 60))
+
+    def mousePressEvent(self, event):
+        self.parent().changeImage(self.ID)
+
+    def resizeEvent(self, event):
+        self.setAttribute(Qt.WA_TranslucentBackground, 0.5)
+
+
+if __name__ == '__main__':
+    app = QApplication([])
+    From = imageDialog(
+        *('D:/MCL/succulentPlants/UI/icons/a.jpg', 'D:/MCL/succulentPlants/UI/icons/b.jpg'))
+    From.show()
+    app.exec_()

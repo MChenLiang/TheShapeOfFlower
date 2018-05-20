@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:/MCL/succulentPlants/UI\UI_succulentPlants.ui'
 #
-# Created: Sun May 13 23:28:25 2018
+# Created: Sun May 20 00:02:40 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
-        Form.resize(749, 677)
+        Form.resize(943, 677)
         Form.setStyleSheet(_fromUtf8(""))
         self.horizontalLayout = QtGui.QHBoxLayout(Form)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -49,7 +49,7 @@ class Ui_Form(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
         self.frame_2.setSizePolicy(sizePolicy)
-        self.frame_2.setMinimumSize(QtCore.QSize(300, 0))
+        self.frame_2.setMinimumSize(QtCore.QSize(520, 0))
         self.frame_2.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_2.setLineWidth(0)

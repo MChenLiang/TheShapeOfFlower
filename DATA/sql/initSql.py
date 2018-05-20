@@ -53,7 +53,6 @@ class ctSql(object):
 
     def initTable(self):
         keyword = 'id TEXT NOT NULL, ' \
-                  'title TEXT NOT NULL,' \
                   'chineseName TEXT NOT NULL,' \
                   'spell TEXT NOT NULL,' \
                   'otherName TEXT NOT NULL,' \
@@ -62,6 +61,7 @@ class ctSql(object):
                   'place TEXT NOT NULL,' \
                   'description TEXT NOT NULL,' \
                   'imagePath TEXT,' \
+                  'title TEXT NOT NULL,' \
                   'typeG TEXT'
 
         sql = "create table if not exists {0}({1})".format(self.__table_name, keyword)
