@@ -202,18 +202,18 @@ class imageDialog(QDialog):
     def __init__(self, *args, **kwargs):
         super(imageDialog, self).__init__(**kwargs)
         self.setMouseTracking(True)
+        self.setAutoFillBackground(True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-
+        self.pixmap = QPixmap()
         if not args:
             self.reject()
         self.imageList = args
 
         self.defNum = 0
-        self.labelMap = QLabel(self)
 
-        self.l_P = mLabel(icon_path('dnP.png'), -1)
+        self.l_P = mLabel(-1)
         self.l_P.setParent(self)
-        self.r_P = mLabel(icon_path('upP.png'), 1)
+        self.r_P = mLabel(1)
         self.r_P.setParent(self)
 
         self.changeImage(0)
@@ -226,14 +226,13 @@ class imageDialog(QDialog):
         else:
             self.defNum += k
 
-        self.labelMap.setPixmap(QPixmap(self.imageList[self.defNum]))
         self.image = QImage(self.imageList[self.defNum])
-        x, y = self.image.size().width(), self.image.size().height()
-        self.resize(x + 60, y)
+        self.x, y = self.image.size().width(), self.image.size().height()
+        self.resize(self.x, y)
 
-        self.labelMap.setGeometry(30, 0, x, y)
-        self.l_P.setGeometry(0, y / 2.0 - 30, 60, 60)
-        self.r_P.setGeometry(x, y / 2.0 - 30, 60, 60)
+        self.l_P.setGeometry(0, 0, 120, y)
+        self.r_P.setGeometry(self.x - 120, 0, 120, y)
+        self.resizeEvent(self)
 
     def mousePressEvent(self, event):
         if event.buttons() == Qt.LeftButton:
@@ -252,45 +251,32 @@ class imageDialog(QDialog):
     def mouseReleaseEvent(self, event):
         self.m_pressed = False
 
-    def enterEvent(self, event):
-        print 'enter'
-        self.setWindowOpacity(0.8)
-        self.l_P.setWindowOpacity(0.8)
-        # self.r_P.setAttribute(Qt.WA_TranslucentBackground, 0.8)
-        # self.l_P.setAttribute(Qt.WA_TranslucentBackground, 0.8)
-
-    def leaveEvent(self, event):
-        print 'leave'
-        self.setWindowOpacity(0.2)
-        self.l_P.setWindowOpacity(0.2)
-        # self.r_P.setAttribute(Qt.WA_TranslucentBackground, 0.2)
-        # self.l_P.setAttribute(Qt.WA_TranslucentBackground, 0.2)
-
     def resizeEvent(self, event):
-        self.setAttribute(Qt.WA_TranslucentBackground, 1)
+        self.pixmap.load(self.imageList[self.defNum])
+        pal = QPalette()
+        pal.setBrush(QPalette.Window,
+                     QBrush(self.pixmap.scaled(event.size(),
+                                               Qt.KeepAspectRatioByExpanding,
+                                               Qt.SmoothTransformation)))
+
+        self.setPalette(pal)
 
 
-class mLabel(QLabel):
-    def __init__(self, image, ID, *args):
+class mLabel(QWidget):
+    def __init__(self, ID, *args):
+        # def __init__(self, imagePath, ID, *args):
         super(mLabel, self).__init__(*args)
-        self.setPixmap(QPixmap(image))
-        self.setScaledContents(True)
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setWindowOpacity(0.5)
         self.ID = ID
-
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
-        self.setSizePolicy(sizePolicy)
-        self.setFixedSize(QSize(60, 60))
+        # pixmap = QPixmap(imagePath)
+        # picSize = QSize(60, 60)
+        # self.scaledMap = pixmap.scaled(picSize, Qt.KeepAspectRatio)
 
     def mousePressEvent(self, event):
         self.parent().changeImage(self.ID)
 
-    def resizeEvent(self, event):
-        self.setAttribute(Qt.WA_TranslucentBackground, 0.5)
+        # def enterEvent(self, event):
+        #     cursor = QCursor(self.scaledMap, -1, -1)
+        #     self.setCursor(cursor)
 
 
 if __name__ == '__main__':

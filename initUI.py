@@ -255,8 +255,8 @@ class image_widget(QWidget):
             self.args = args
             self.id, chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
             self.set_font(chineseName)
-            imagePath = imagePath.split(';')
-            self.set_in_path(imagePath[0])
+            self.imagePath = imagePath.split(';')
+            self.set_in_path(self.imagePath[0])
 
     def set_in_path(self, in_path):
         self.__in_path__ = in_path.replace('\\', '/')

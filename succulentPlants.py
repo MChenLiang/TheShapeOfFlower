@@ -17,6 +17,7 @@ import editConf
 import initUI
 import myThread
 from DATA import typeEdit
+import existsUI as exUI
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 from UI import UI_succulentPlants
 
@@ -213,14 +214,15 @@ class openUI(QMainWindow):
             else:
                 wgt = initUI.image_widget(*i)
                 wgt.clicked[int].connect(partial(self.set_image, wgt))
-                # wgt.doubleClicked.connect()
+                wgt.doubleClicked.connect(partial(self.dlgImage, wgt))
                 widget.add_widget(wgt)
             wgt.show()
 
         widget.layout()
 
-    def getItem(self):
-        pass
+    def dlgImage(self, wgt):
+        self.dlg = exUI.imageDialog(*wgt.imagePath)
+        self.dlg.exec_()
 
     def set_image(self, wgt, conf):
         (idStr,
