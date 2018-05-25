@@ -118,14 +118,14 @@ class getMessage(object):
                 mDict.setdefault(u'image：', list()).append(localFPath)
                 # load image
 
-                r = requests.get(httpImagePath, stream=True)
-
-                dir_p = os.path.dirname(localFPath)
-                os.path.exists(dir_p) or os.makedirs(dir_p)
-
-                with open(localFPath, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=32):
-                        f.write(chunk)
+                # r = requests.get(httpImagePath, stream=True)
+                #
+                # dir_p = os.path.dirname(localFPath)
+                # os.path.exists(dir_p) or os.makedirs(dir_p)
+                #
+                # with open(localFPath, 'wb') as f:
+                #     for chunk in r.iter_content(chunk_size=32):
+                #         f.write(chunk)
 
             val = ';'.join(mDict.get(u'image：'))
             mDict.pop(u'image：')

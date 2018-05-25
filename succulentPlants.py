@@ -47,6 +47,7 @@ class openUI(QMainWindow):
     def __init__(self, parent=None):
         super(openUI, self).__init__(parent)
         self.UI()
+        self.selTree = None
         self.allSel = list()
         self.imageDict = dict()
 
@@ -115,21 +116,40 @@ class openUI(QMainWindow):
 
     def bt_clicked(self):
         self.win.treeView_type.selectionModel().selectionChanged.connect(self.on_treeView_selectionChanged)
+        self.pageW.comboBoxNum.activated.connect(self.on_page_comboBox_changed)
+        all_pt = [self.pageW.minP, self.pageW.dnP, self.pageW.upP, self.pageW.maxP]
+        for pt in all_pt:
+            pt.clicked.connect(self.on_page_comboBox_changed)
+
+    def on_page_comboBox_changed(self):
+        page = int(self.pageW.comboBoxNum.currentText())
+        num = int(self.pageW.spin.currentText())
+        allImage = self.imageDict[self.selTree]
+        tool = len(allImage)
+        minNum = (page - 1) * num
+        maxNum = page * num if tool > page * num else tool
+        self.add_item(allImage[minNum:maxNum])
 
     def on_treeView_selectionChanged(self):
-        index = self.win.treeView_type.selectedIndexes()[0]
-        str_sel = index.data(0).toString()
-        str_p = index.parent().data(0).toString()
-        selStr = '{0}->{1}'.format(str_p, str_sel) if str_p else str_sel
+        selStr = self.get_selection_treeView()
 
         isUpdate = False
         if selStr not in self.allSel:
             self.allSel.append(selStr)
             isUpdate = True
 
-        beG = """typeG like "%{0}%" """.format(selStr)
+        self.selTree = beG = """typeG like "%{0}%" """.format(selStr)
         self.t = myThread.setItem(self, beG, isUpdate=isUpdate)
         self.t.start()
+
+    def get_selection_treeView(self):
+        indexs = self.win.treeView_type.selectedIndexes()
+        if not indexs:
+            return False
+        index = indexs[0]
+        str_sel = str(index.data(0).toString())
+        str_p = str(index.parent().data(0).toString())
+        return '{0}->{1}'.format(str_p, str_sel) if str_p else str_sel
 
     def init_asset_menu(self):
         self.win.widget_asset.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -178,9 +198,22 @@ class openUI(QMainWindow):
         self.asset_menu.exec_(QCursor().pos())
 
     def asset_add(self):
+        selTreeView = self.get_selection_treeView()
+        if not selTreeView:
+            print "dialog warning!!"
+            return
+        typeG = selTreeView
+        splList = selTreeView.split('->')
+        if splList.__len__() == 2:
+            typeG += '->{}'.format(splList[0])
+
         print 'add --->> '
 
     def asset_edit(self):
+        sel = [k for k in self.objWidget.Image_widget_list.values() if k.selected]
+        if sel.__len__() == 0:
+            print 'dialog warning!! Please selected only one item!!!'
+        print sel[0]
         print 'edit --- >> '
 
     def asset_del(self):
@@ -240,11 +273,13 @@ class openUI(QMainWindow):
             self.win.lineEdit_lName.setText(SName)
             self.win.lineEdit_type.setText(genera)
             self.win.lineEdit_From.setText(place)
+            self.win.lineEdit_ID.setText(idStr)
             self.win.textEdit_intro.setText(description)
         else:
             self.win.label_title.setText(u'标题')
             lList = [self.win.lineEdit_cName, self.win.lineEdit_sOther, self.win.lineEdit_lName,
-                     self.win.lineEdit_type, self.win.lineEdit_From, self.win.textEdit_intro]
+                     self.win.lineEdit_type, self.win.lineEdit_From, self.win.lineEdit_ID,
+                     self.win.textEdit_intro]
 
             for each in lList:
                 each.clear()

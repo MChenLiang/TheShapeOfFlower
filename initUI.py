@@ -284,7 +284,7 @@ class image_widget(QWidget):
     def setSelected(self, conf):
         if image_widget.prevSelected is not None:
             image_widget.prevSelected.selected = False
-            image_widget.prevSelected.repaint()
+            image_widget.prevSelected.repaint() if not image_widget().isHidden() else True
         self.selected = conf
         self.repaint()
         image_widget.prevSelected = self
@@ -493,14 +493,14 @@ class pageWidget(QWidget):
         self.spin.setCurrentIndex(29)
         hBox.addWidget(self.spin)
 
-        minP = QPushButton(QIcon(icon_path('minP.png')), '', self)
-        dnP = QPushButton(QIcon(icon_path('dnP.png')), '', self)
+        self.minP = QPushButton(QIcon(icon_path('minP.png')), '', self)
+        self.dnP = QPushButton(QIcon(icon_path('dnP.png')), '', self)
         self.comboBoxNum = QComboBox(self)
         self.comboBoxNum.setStyleSheet(comboBox)
-        upP = QPushButton(QIcon(icon_path('upP.png')), '', self)
-        maxP = QPushButton(QIcon(icon_path('maxP.png')), '', self)
+        self.upP = QPushButton(QIcon(icon_path('upP.png')), '', self)
+        self.maxP = QPushButton(QIcon(icon_path('maxP.png')), '', self)
 
-        all_pt = [minP, dnP, self.comboBoxNum, upP, maxP]
+        all_pt = [self.minP, self.dnP, self.comboBoxNum, self.upP, self.maxP]
 
         for (i, t) in enumerate(all_pt):
             t.setIconSize(QSize(30, 30))
