@@ -25,9 +25,15 @@ def show_progress(*args, **kwargs):
     progress_bar.show(*args, **kwargs)
 
 
+def show_warning(txt, key='w'):
+    dlg = warning_dlg.warning_ui('MCL_Warning', title=txt, conf=key)
+    return dlg.exec_()
 
+
+"""
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
 
 class t_ui(QWidget):
     def __init__(self):
@@ -43,9 +49,9 @@ class t_ui(QWidget):
             pg_conf.progress_label = "Had Finished {}%!!".format(i)
 
 
-# def main():
 if __name__ == '__main__':
     app = QApplication([])
-    Form = t_ui()
-    Form.show()
+    Form = show_warning(u'确定了么？ \n\n确定么\n\n确定么', 'a')
+    print Form
     sys.exit(app.exec_())
+"""
