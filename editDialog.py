@@ -205,6 +205,8 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
     def __init__(self, conf='edit', **kwargs):
         super(dialogItem, self).__init__(**kwargs)
 
+        self.conf = conf
+
         self.setupUi(self)
         self.setWindowTitle(conf)
 
@@ -233,6 +235,9 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
     def edit_item(self, **kwargs):
         pass
 
+    def submit_sql(self):
+
+        pass
 
 if __name__ == '__main__':
     app = QApplication([])
