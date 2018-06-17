@@ -2,6 +2,7 @@
 # -*- coding:UTF-8 -*-
 __author__ = 'miaochenliang'
 
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import math
 import os
 import sys
@@ -79,6 +80,9 @@ class list_ui(QWidget):
             each.setChecked(False)
         self.sender().setChecked(True)
         self.p.setAllItem(self.sender())
+
+    def edit_item(self):
+        self.p.edit_item()
 
     def pushButton(self, name):
         button = asset_button(self.setLabelShow, self.setLabelHide)
@@ -253,8 +257,8 @@ class image_widget(QWidget):
         super(image_widget, self).update()
         if args:
             self.args = args
-            self.id, chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
-            self.set_font(chineseName)
+            self.id, self.chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
+            self.set_font(self.chineseName)
             self.imagePath = imagePath.split(';')
             self.set_in_path(self.imagePath[0])
 
@@ -401,7 +405,7 @@ class picture_prev(QFrame):
 
     def layout(self):
         w = self.width() - 60
-        widgets = [_ for _ in self.item_area.children()]# if not _.isHidden()]
+        widgets = [_ for _ in self.item_area.children()]  # if not _.isHidden()]
         num_x = max(math.ceil(w / (self.THUMB_WIDTH + self.asset_space)), 1)  # Can do -1
         num_y = math.ceil(len(widgets) / num_x)
         self.item_area.resize(w, num_y * (self.THUMB_HEIGHT + self.asset_space) + 50)
@@ -456,20 +460,31 @@ class picture_prev(QFrame):
     def setSelected(self, id):
         self.ImageWidgetList[str(id)].setSelected()
 
+    def edit_item(self):
+        wgt = image_widget.prevSelected
+        if not wgt:
+            return
+
     def createContextMenu(self, widget):
         widget.setContextMenuPolicy(Qt.CustomContextMenu)
         widget.customContextMenuRequested.connect(self.showContextMenu)
 
         # create menu
         self.contextMenu = QMenu(self)
-        self.actionA = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作A')
-        self.actionB = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作B')
-        self.actionC = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作C')
-        # add second menu
-        self.second = self.contextMenu.addMenu(QIcon("images/0.png"), u"|  二级菜单")
-        self.actionD = self.second.addAction(QIcon("images/0.png"), u'|  动作A')
-        self.actionE = self.second.addAction(QIcon("images/0.png"), u'|  动作B')
-        self.actionF = self.second.addAction(QIcon("images/0.png"), u'|  动作C')
+
+        self.editAction = QAction(u'| 编辑', self)
+        self.contextMenu.addAction(self.editAction)
+
+        self.editAction.triggered.connect(self.parent().edit_item)
+
+        # self.actionA = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作A')
+        # self.actionB = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作B')
+        # self.actionC = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作C')
+        # # add second menu
+        # self.second = self.contextMenu.addMenu(QIcon("images/0.png"), u"|  二级菜单")
+        # self.actionD = self.second.addAction(QIcon("images/0.png"), u'|  动作A')
+        # self.actionE = self.second.addAction(QIcon("images/0.png"), u'|  动作B')
+        # self.actionF = self.second.addAction(QIcon("images/0.png"), u'|  动作C')
 
     def showContextMenu(self):
         self.contextMenu.exec_(QCursor.pos())

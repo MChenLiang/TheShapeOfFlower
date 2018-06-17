@@ -25,9 +25,13 @@ class sqlEdit(object):
     def queryItem(self, beG):
         return self.ctSql.queryItem(beG).fetchall()
 
+    def updateItem(self, beG, **kwargs):
+        editG = ','.join(['%s="%s"' % (k, v.replace('"', "'")) for (k, v) in kwargs.items()])
+
+        self.ctSql.updateItem(beG, editG)
+
 
 if __name__ == '__main__':
     sql = sqlEdit()
     for (i, each) in enumerate(sql.queryItem("""typeG like "%多肉%" """)):
         print i, '--- >> ', each[1]
-

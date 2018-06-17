@@ -18,8 +18,12 @@ import initUI
 import myThread
 from DATA import typeEdit
 import existsUI as exUI
+from MUtils import openUI as mUI
+from editDialog import editItem as edItem
+
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 from UI import UI_succulentPlants
+
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 reload(initUI)
@@ -60,6 +64,9 @@ class openUI(QMainWindow):
 
         self.setWindowTitle(__win_name__)
         self.setObjectName(__win_name__)
+
+        self.win.label_ID.hide()
+        self.win.lineEdit_ID.hide()
 
         self.__init__ui__()
         self.bt_clicked()
@@ -151,6 +158,13 @@ class openUI(QMainWindow):
         str_p = str(index.parent().data(0).toString())
         return '{0}->{1}'.format(str_p, str_sel) if str_p else str_sel
 
+    def get_selection_item(self):
+        sel = [k for k in self.objWidget.Image_widget_list.values() if k.selected]
+        if sel:
+            return sel[0]
+        else:
+            return False
+
     def init_asset_menu(self):
         self.win.widget_asset.setContextMenuPolicy(Qt.CustomContextMenu)
         self.win.widget_asset.customContextMenuRequested.connect(self.show_asset_menu)
@@ -186,13 +200,11 @@ class openUI(QMainWindow):
                                       "QMenu#menu::separator{margin:2px 0px 2px 0px;}"
                                       "QMenu#menu::indicator {padding:10px;}"
                                       )
-        # add_type = QAction(u'&显示(Show)')
         add_item = QAction(u'| 添加', self, triggered=self.asset_add)
-        edit_item = QAction(u'| 编辑', self, triggered=self.asset_edit)
+        # edit_item = QAction(u'| 编辑', self, triggered=self.asset_edit)
         del_item = QAction(u'| 删除', self, triggered=self.asset_del)
 
-        self.asset_menu.addActions([add_item, edit_item, del_item])
-        # self.asset_menu.addActions([add_type, add_name])
+        self.asset_menu.addActions([add_item,  del_item])
 
     def show_asset_menu(self, pos):
         self.asset_menu.exec_(QCursor().pos())
@@ -200,7 +212,7 @@ class openUI(QMainWindow):
     def asset_add(self):
         selTreeView = self.get_selection_treeView()
         if not selTreeView:
-            print "dialog warning!!"
+            mUI.show_warning('Must Select one type!!!', 'W')
             return
         typeG = selTreeView
         splList = selTreeView.split('->')
@@ -210,14 +222,21 @@ class openUI(QMainWindow):
         print 'add --->> '
 
     def asset_edit(self):
-        sel = [k for k in self.objWidget.Image_widget_list.values() if k.selected]
-        if sel.__len__() == 0:
-            print 'dialog warning!! Please selected only one item!!!'
-        print sel[0]
-        print 'edit --- >> '
+        if not self.get_selection_item():
+            mUI.show_warning('Please selected only one item!!!', 'w')
+            return
 
     def asset_del(self):
-        print 'delect --- >> '
+        sel = self.get_selection_item()
+        if not sel:
+            mUI.show_warning('Please selected only one item!!!', 'w')
+            return
+
+        if not mUI.show_warning(u'Are you sure you want to delete {} ???'.format(sel.chineseName), 'a'):
+            return
+        else:
+
+            print 'delect --- >> '
 
     def setAllItem(self, sender):
         self.inP = sender
@@ -253,6 +272,19 @@ class openUI(QMainWindow):
 
         widget.layout()
 
+    def edit_item(self):
+        wgt = initUI.image_widget.prevSelected
+        if not wgt:
+            return
+
+        keys = ['id', 'chineseName', 'spell', 'otherName', 'SName', 'genera', 'place', 'description', 'imagePath', 'title', 'typeG']
+        vals = wgt.args
+        kwg = dict()
+        for (k, v) in zip(keys, vals):
+            kwg.setdefault(k, v)
+        self.edDialog = edItem(parent=self, **kwg)
+        self.edDialog.exec_()
+
     def dlgImage(self, wgt):
         self.dlg = exUI.imageDialog(*wgt.imagePath)
         self.dlg.exec_()
@@ -269,6 +301,7 @@ class openUI(QMainWindow):
         if conf:
             self.win.label_title.setText(chineseName)
             self.win.lineEdit_cName.setText(chineseName)
+            self.win.lineEdit_spell.setText(spell)
             self.win.lineEdit_sOther.setText(otherName)
             self.win.lineEdit_lName.setText(SName)
             self.win.lineEdit_type.setText(genera)

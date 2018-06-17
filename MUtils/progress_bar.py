@@ -1,5 +1,6 @@
-#!/user/bin/env python
-# -*- coding: UTF-8 -*-
+#!/usr/bin/env python
+# -*- coding:UTF-8 -*-
+# @email : spirit_az@foxmail.com
 __author__ = 'miaochenliang'
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -40,38 +41,7 @@ def get_gif():
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 class progress_bar(QDialog):
-    """
-    A progress bar
-    example :
 
-    import pg_conf
-    import progress_bar
-
-    '''
-    args[0] = UI name
-    args[1] = parent_UI
-    args[2] = function
-    '''
-    connect(partial(progress_bar.show, *args, **kwargs))
-
-    function(*args, **kwargs):
-        '''
-        parameter
-        '''
-        pg_conf.progress_current_val = 0
-        pg_conf.progress_max_val = 100
-        pg_conf.progress_win_t = ''
-        pg_conf.progress_title = ''
-        pg_conf.progress_label = ""
-        for i in range(101):
-            time.sleep(0.3)
-            pg_conf.progress_current_val = i
-            pg_conf.progress_label = "Had Finished {}%!!".format(i)
-
-    ~show()
-    ~~partial(progress_bar.show, "txt_", None, self.txt_pro)
-
-    """
     pos_x = 500
     offset_y = 200
 

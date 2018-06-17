@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:/MCL/succulentPlants/UI\UI_succulentPlants.ui'
 #
-# Created: Fri May 25 22:50:55 2018
+# Created: Sat Jun 16 21:46:14 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!

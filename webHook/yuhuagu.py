@@ -39,12 +39,13 @@ from module import baseCommand as bcmds
 
 import baseEnv
 
+# 数据库的链接封装 这里要改成自己的数据库
 import DATA.sqlEdit as sqlEdit
-import pinyinMaster.pinyin as py
+import pinyinMaster.spellChiness as py
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 reload(sys)
-sys.setdefaultencoding('utf-8')
+# sys.setdefaultencoding('utf-8')
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 all_agent = bcmds.agent()
@@ -68,16 +69,19 @@ def getAllUrlStr():
 
 
 def main():
-    sql = sqlEdit.sqlEdit()
+    """sqlite3 不支持多线程或多进程。"""
+    sql = sqlEdit.sqlEdit() # 数据库的实例
+    # sql = None
     for each in getAllUrlStr():
         getMessage(each, sql)
 
-        # sql = sqlEdit.sqlEdit
-        # pool = multiprocessing.Pool()
-        # for each in getAllUrlStr():
-        #     pool.apply_async(getMessage, args=(each, sql,))
-        # pool.close()
-        # pool.join()
+    # 下面为多进程的网页爬取
+    # sql = sqlEdit.sqlEdit
+    # pool = multiprocessing.Pool()
+    # for each in getAllUrlStr():
+    #     pool.apply_async(getMessage, args=(each, sql,))
+    # pool.close()
+    # pool.join()
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -95,8 +99,9 @@ class getMessage(object):
             request = urllib2.Request(each)
             html = urllib2.urlopen(request)
 
-            bsObj = BeautifulSoup(html, "html.parser", from_encoding='GB2312')
+            bsObj = BeautifulSoup(html, "html.parser", from_encoding='')
             title = list(bsObj.find('h1').childGenerator())[0].title()
+            print 'title  --- >> ', title
 
             for k in bsObj.body.find('ul', {'class': 'li'}).find_all('li'):
                 contents = k.contents
@@ -110,7 +115,9 @@ class getMessage(object):
             mDict.setdefault(u'intro：', str(bsObj.find('p')).replace('"', "'"))
 
             for k in bsObj.body.find('div', {'class': 'wenz'}).find_all('p'):
-                httpImagePath = k.contents[0].contents[0].attrs['src']
+                httpImagePath = k.contents[0].contents[0].attrs['src'].decode('GB2312').encode('UTF-8')
+                print httpImagePath
+                """
                 _, fileName = os.path.split(httpImagePath)
                 fileName = fileName.split(' ')[0]
 
@@ -118,15 +125,16 @@ class getMessage(object):
                 mDict.setdefault(u'image：', list()).append(localFPath)
                 # load image
 
-                # r = requests.get(httpImagePath, stream=True)
-                #
-                # dir_p = os.path.dirname(localFPath)
-                # os.path.exists(dir_p) or os.makedirs(dir_p)
-                #
-                # with open(localFPath, 'wb') as f:
-                #     for chunk in r.iter_content(chunk_size=32):
-                #         f.write(chunk)
+                r = requests.get(httpImagePath, stream=True)
 
+                dir_p = os.path.dirname(localFPath)
+                os.path.exists(dir_p) or os.makedirs(dir_p)
+
+                with open(localFPath, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=32):
+                        f.write(chunk)
+                """
+                """
             val = ';'.join(mDict.get(u'image：'))
             mDict.pop(u'image：')
             mDict.setdefault(u'image：', val)
@@ -151,11 +159,12 @@ class getMessage(object):
             except:
                 break
             else:
-                kwargs.setdefault('spell',
-                                  py.PinYin().hanzi2pinyin_split(str=kwargs.get('chineseName'),
-                                                                 split=" "))
+                print py.connect().split('_')
+                kwargs.setdefault('spell', py.connect().split('_'))
                 kwargs.setdefault('typeG', u'多肉植物;多肉植物->番杏科(Aizoaceae)')
+                # 提交数据库
                 self.sql.insertItem(**kwargs)
+"""
 
     def get_all_html(self):
         bsObj = BeautifulSoup(self.html, "html.parser", from_encoding='GB2312')

@@ -59,6 +59,7 @@ class warning_ui(QDialog):
         lay.addWidget(self.label_icon, Qt.AlignHCenter, Qt.AlignHCenter)
 
         self.label_message = QLabel(self)
+        self.label_message.setWordWrap(True)
         self.label_message.setAlignment(Qt.AlignCenter)
 
         self.label_message.setFont(font)
