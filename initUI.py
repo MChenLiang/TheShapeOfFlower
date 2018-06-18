@@ -259,7 +259,7 @@ class image_widget(QWidget):
             self.args = args
             self.id, self.chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
             self.set_font(self.chineseName)
-            self.imagePath = imagePath.split(';')
+            self.imagePath = [os.path.join(_conf.get(baseEnv.configuration, baseEnv.path), 'DATA/Image', title,  _) for _ in imagePath.split(';')]
             self.set_in_path(self.imagePath[0])
 
     def set_in_path(self, in_path):

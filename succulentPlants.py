@@ -170,36 +170,7 @@ class openUI(QMainWindow):
         self.win.widget_asset.customContextMenuRequested.connect(self.show_asset_menu)
 
         self.asset_menu = QMenu(self)
-        self.asset_menu.setStyleSheet("QMenu{background:purple;}"
-                                      "QMenu{border:1px solid lightgray;}"
-                                      "QMenu{border-color:green;}"
-                                      "QMenu::item{padding:0px 40px 0px 20px;}"
-                                      "QMenu::item{height:30px;}"
-                                      "QMenu::item{color:blue;}"
-                                      "QMenu::item{background:white;}"
-                                      "QMenu::item{margin:1px 0px 0px 0px;}"
-
-                                      "QMenu::item:selected:enabled{background:lightgray;}"
-                                      "QMenu::item:selected:enabled{color:white;}"
-                                      "QMenu::item:selected:!enabled{background:transparent;}"
-
-                                      "QMenu::separator{height:50px;}"
-                                      "QMenu::separator{width:1px;}"
-                                      "QMenu::separator{background:white;}"
-                                      "QMenu::separator{margin:1px 1px 1px 1px;}"
-
-                                      "QMenu#menu{background:white;}"
-                                      "QMenu#menu{border:1px solid lightgray;}"
-                                      "QMenu#menu::item{padding:0px 40px 0px 30px;}"
-                                      "QMenu#menu::item{height:25px;}"
-                                      "QMenu#menu::item:selected:enabled{background:lightgray;}"
-                                      "QMenu#menu::item:selected:enabled{color:white;}"
-                                      "QMenu#menu::item:selected:!enabled{background:transparent;}"
-                                      "QMenu#menu::separator{height:1px;}"
-                                      "QMenu#menu::separator{background:lightgray;}"
-                                      "QMenu#menu::separator{margin:2px 0px 2px 0px;}"
-                                      "QMenu#menu::indicator {padding:10px;}"
-                                      )
+        self.asset_menu.setStyleSheet(_conf.get(baseEnv.configuration, baseEnv.menu))
         add_item = QAction(u'| 添加', self, triggered=self.asset_add)
         # edit_item = QAction(u'| 编辑', self, triggered=self.asset_edit)
         del_item = QAction(u'| 删除', self, triggered=self.asset_del)
@@ -299,7 +270,7 @@ class openUI(QMainWindow):
          title,
          typeG) = wgt.args
         if conf:
-            self.win.label_title.setText(chineseName)
+            self.win.label_title.setText(title)
             self.win.lineEdit_cName.setText(chineseName)
             self.win.lineEdit_spell.setText(spell)
             self.win.lineEdit_sOther.setText(otherName)

@@ -122,5 +122,6 @@ class ctSql(object):
 if __name__ == '__main__':
     ct = ctSql()
     ct.connectSql()
-    ct.execute('delete from image;')
+    ct.initTable()
+    # ct.execute('delete from image;')
 

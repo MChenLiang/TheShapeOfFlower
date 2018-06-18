@@ -3,6 +3,7 @@
 __author__ = 'miaochenliang'
 
 configuration = 'configuration'
+path = 'path'
 name = 'name'
 version = 'version'
 alphabet = 'alphabet'
@@ -10,6 +11,7 @@ qss = 'qss'
 button = 'pushbutton'
 H_slider = 'H_slider'
 comboBox = 'combobox'
+menu = 'menu'
 
 titleMatch = {'title': 'title',
               '拉丁学名：': 'SName',

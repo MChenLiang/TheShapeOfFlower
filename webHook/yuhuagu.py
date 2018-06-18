@@ -45,7 +45,8 @@ import pinyinMaster.spellChiness as spellChiness
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 reload(sys)
-# sys.setdefaultencoding('utf-8')
+sys.setdefaultencoding('UTF-8')
+
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 all_agent = bcmds.agent()
@@ -74,7 +75,7 @@ def main():
     # sql = None
     for each in getAllUrlStr():
         getMessage(each, sql)
-        break
+        # break
 
     # 下面为多进程的网页爬取
     # sql = sqlEdit.sqlEdit
@@ -83,6 +84,17 @@ def main():
     #     pool.apply_async(getMessage, args=(each, sql,))
     # pool.close()
     # pool.join()
+
+
+def download_image(httpImagePath, localFPath):
+    r = requests.get(httpImagePath, stream=True)
+
+    dir_p = os.path.dirname(localFPath)
+    os.path.exists(dir_p) or os.makedirs(dir_p)
+
+    with open(localFPath, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=32):
+            f.write(chunk)
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -119,11 +131,12 @@ class getMessage(object):
                 v_list.append(val)
 
             temp_dict.setdefault('chineseName', v_list[0])
-            temp_dict.setdefault('spell', spellChiness.connect().split(' ', v_list[0]))
+            temp_dict.setdefault('spell', spellChiness.connect().split(' ', *v_list[0]))
             temp_dict.setdefault('otherName', v_list[1])
             temp_dict.setdefault('SName', v_list[2])
             temp_dict.setdefault('genera', v_list[3])
             temp_dict.setdefault('place', v_list[4])
+            temp_dict.setdefault('typeG', u'多肉植物;多肉植物->番杏科(Aizoaceae)')
 
             intro = body.find('p').children.next()
             temp_dict.setdefault('description', intro)
@@ -134,57 +147,15 @@ class getMessage(object):
             temp_dict.setdefault('imagePath', all_http_image)
 
         for (k, v) in all_dict.items():
-            print k, v
+            http_image = v.get('imagePath').split(';')
+            # map(lambda x: download_image(x, os.path.join(dirP, k, os.path.split(x)[-1])), http_image)
 
+            image_f = ';'.join(os.path.split(each)[-1] for each in http_image)
 
-            """
-                _, fileName = os.path.split(httpImagePath)
-                fileName = fileName.split(' ')[0]
-
-                localFPath = os.path.join(dirP, re.split(' |\(|（', title)[0], fileName).replace('\\', '/')
-                mDict.setdefault(u'image：', list()).append(localFPath)
-                # load image
-
-                r = requests.get(httpImagePath, stream=True)
-
-                dir_p = os.path.dirname(localFPath)
-                os.path.exists(dir_p) or os.makedirs(dir_p)
-
-                with open(localFPath, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=32):
-                        f.write(chunk)
-                """
-            """
-            val = ';'.join(mDict.get(u'image：'))
-            mDict.pop(u'image：')
-            mDict.setdefault(u'image：', val)
-
-            self.message.setdefault(title, mDict)
-        #
-
-        for (k, vs) in self.message.items():
-            # kwargs = {'title':
-            #   'chineseName':
-            #   'spell':
-            #   'otherName':
-            #   'SName':
-            #   'genera':
-            #   'place':
-            #   'description':
-            #   'imagePath':}
-            kwargs = {'title': k}
-            try:
-                for (i, v) in vs.items():
-                    kwargs.setdefault(baseEnv.titleMatch[i], v)
-            except:
-                break
-            else:
-                print py.connect().split('_')
-                kwargs.setdefault('spell', py.connect().split('_'))
-                kwargs.setdefault('typeG', u'多肉植物;多肉植物->番杏科(Aizoaceae)')
-                # 提交数据库
-                self.sql.insertItem(**kwargs)
-"""
+            v.setdefault('title', k)
+            v.pop('imagePath')
+            v.setdefault('imagePath', image_f)
+            self.sql.insertItem(**v)
 
     def get_all_html(self):
         bsObj = BeautifulSoup(self.html, "html.parser", from_encoding='GB2312')
