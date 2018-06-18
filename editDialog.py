@@ -2,6 +2,7 @@
 # -*- coding:UTF-8 -*-
 # @Time : 2018/6/16 21:48
 # @email : spirit_az@foxmail.com
+
 __author__ = 'miaochenliang'
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -151,6 +152,7 @@ class editItem(QDialog, editItemDialog.Ui_Dialog):
 
 
 class image_widget(QScrollArea):
+
     def __init__(self, **kwargs):
         super(image_widget, self).__init__(**kwargs)
         self.setAcceptDrops(True)
@@ -227,7 +229,19 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
             self.add_item()
 
     def run(self):
-        pass
+        chiness = self.lineEdit_cName.text()
+        spell = self.lineEdit_spell.text()
+        other = self.lineEdit_sOther.text()
+        lName = self.lineEdit_lName.text()
+        typ = self.lineEdit_type.text()
+        place = self.lineEdit_From.text()
+        ID = self.lineEdit_ID.text()
+        intro = self.textEdit_intro.toPlainText()
+
+    def get_label(self):
+        all_label = [each.text() for each in self.image_widget.children() if isinstance(each, QLabel)]
+
+        all_image_path = ';'.join(os.path.split(each) for each in self.image_widget.all_image)
 
     def add_item(self):
         pass
@@ -238,6 +252,7 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
     def submit_sql(self):
 
         pass
+
 
 if __name__ == '__main__':
     app = QApplication([])
