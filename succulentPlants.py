@@ -19,17 +19,17 @@ import myThread
 from DATA import typeEdit
 import existsUI as exUI
 from MUtils import openUI as mUI
-from editDialog import editItem as edItem
+import editDialog
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 from UI import UI_succulentPlants
-
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 reload(initUI)
 reload(UI_succulentPlants)
 reload(typeEdit)
 reload(myThread)
+reload(editDialog)
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import __init__
@@ -175,7 +175,7 @@ class openUI(QMainWindow):
         # edit_item = QAction(u'| 编辑', self, triggered=self.asset_edit)
         del_item = QAction(u'| 删除', self, triggered=self.asset_del)
 
-        self.asset_menu.addActions([add_item,  del_item])
+        self.asset_menu.addActions([add_item, del_item])
 
     def show_asset_menu(self, pos):
         self.asset_menu.exec_(QCursor().pos())
@@ -247,13 +247,13 @@ class openUI(QMainWindow):
         wgt = initUI.image_widget.prevSelected
         if not wgt:
             return
-
-        keys = ['id', 'chineseName', 'spell', 'otherName', 'SName', 'genera', 'place', 'description', 'imagePath', 'title', 'typeG']
+        keys = ['ID', 'chineseName', 'spell', 'otherName', 'SName', 'genera', 'place',
+                'description', 'imagePath', 'title', 'typeG']
         vals = wgt.args
         kwg = dict()
         for (k, v) in zip(keys, vals):
             kwg.setdefault(k, v)
-        self.edDialog = edItem(parent=self, **kwg)
+        self.edDialog = editDialog.dialogItem(parent=self, conf='edit', **kwg)
         self.edDialog.exec_()
 
     def dlgImage(self, wgt):
@@ -261,14 +261,8 @@ class openUI(QMainWindow):
         self.dlg.exec_()
 
     def set_image(self, wgt, conf):
-        (idStr,
-         chineseName, spell, otherName, SName,
-         genera,
-         place,
-         description,
-         imagePath,
-         title,
-         typeG) = wgt.args
+        (ID, chineseName, spell, otherName, SName, genera, place,
+         description, imagePath, title, typeG) = wgt.args
         if conf:
             self.win.label_title.setText(title)
             self.win.lineEdit_cName.setText(chineseName)
@@ -277,7 +271,7 @@ class openUI(QMainWindow):
             self.win.lineEdit_lName.setText(SName)
             self.win.lineEdit_type.setText(genera)
             self.win.lineEdit_From.setText(place)
-            self.win.lineEdit_ID.setText(idStr)
+            self.win.lineEdit_ID.setText(ID)
             self.win.textEdit_intro.setText(description)
         else:
             self.win.label_title.setText(u'标题')

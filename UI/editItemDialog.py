@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:/MCL/succulentPlants/UI\editItemDialog.ui'
+# Form implementation generated from reading ui file 'E:/MCL/python/succulentPlants/UI\editItemDialog.ui'
 #
-# Created: Sat Jun 16 21:46:14 2018
+# Created: Thu Jun 21 00:42:38 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(592, 624)
+        Dialog.resize(863, 624)
         self.verticalLayout = QtGui.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -103,6 +103,7 @@ class Ui_Dialog(object):
         self.label_ID.setObjectName(_fromUtf8("label_ID"))
         self.gridLayout.addWidget(self.label_ID, 6, 0, 1, 1)
         self.lineEdit_ID = QtGui.QLineEdit(self.frame_message)
+        self.lineEdit_ID.setEnabled(False)
         self.lineEdit_ID.setFrame(False)
         self.lineEdit_ID.setObjectName(_fromUtf8("lineEdit_ID"))
         self.gridLayout.addWidget(self.lineEdit_ID, 6, 1, 1, 1)
@@ -121,7 +122,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame_asset.sizePolicy().hasHeightForWidth())
         self.frame_asset.setSizePolicy(sizePolicy)
-        self.frame_asset.setMinimumSize(QtCore.QSize(120, 0))
+        self.frame_asset.setMinimumSize(QtCore.QSize(460, 0))
         self.frame_asset.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.frame_asset.setFrameShape(QtGui.QFrame.Box)
         self.frame_asset.setObjectName(_fromUtf8("frame_asset"))

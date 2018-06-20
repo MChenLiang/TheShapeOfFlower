@@ -22,7 +22,7 @@ from baseFunction import baseFunc
 
 import initUI
 
-import sip
+from __init__ import __start_path__
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 reload(editItemDialog)
@@ -151,39 +151,19 @@ class editItem(QDialog, editItemDialog.Ui_Dialog):
             sql.insertItem(**dictTemp)
 
 
-class image_widget(QScrollArea):
-
-    def __init__(self, **kwargs):
-        super(image_widget, self).__init__(**kwargs)
+class image_frame(initUI.picture_prev):
+    def __init__(self, *args):
+        super(image_frame, self).__init__(*args)
         self.setAcceptDrops(True)
-        self.setWidgetResizable(True)
-
-        self.all_image = list()
-
-        widget = QWidget(self)
-        self.setWidget(widget)
-
-        self.VLay = QVBoxLayout(widget)
-
-    def add_label(self, image_path):
-        # print image_path
-        # if image_widget not in self.all_image:
-
-        self.all_image.append(image_widget)
-        label = QLabel(self)
-        label.setFixedSize(60, 60)
-        label.setScaledContents(True)
-        label.setPixmap(QPixmap(image_path))
-        self.VLay.addWidget(label)
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
         else:
-            super(image_widget, self).dragEnterEvent(event)
+            super(image_frame, self).dragEnterEvent(event)
 
     def dragMoveEvent(self, event):
-        super(image_widget, self).dragMoveEvent(event)
+        super(image_frame, self).dragMoveEvent(event)
 
     def dropEvent(self, event):
         if event.mimeData().hasUrls():
@@ -191,72 +171,133 @@ class image_widget(QScrollArea):
             allFilePath = (str(url.toLocalFile()).decode('UTF-8') for url in event.mimeData().urls())
             for each in allFilePath:
                 if os.path.isfile(each):
-                    self.add_label(each)
+                    self.add_widget(each)
                 else:
-                    map(lambda x: self.add_label(x), self.getAllImage(each))
+                    map(lambda x: self.add_widget(x), self.getAllImage(each))
 
             event.acceptProposedAction()
         else:
-            super(image_widget, self).dropEvent(event)
+            super(image_frame, self).dropEvent(event)
+
+    def add_widget(self, imagePath):
+        widget = initUI.image_widget(parent=self.item_area)
+        widget.set_in_path(imagePath)
+        widget.id = imagePath
+
+        self.Image_widget_list.setdefault(str(widget.id), widget)
+        self.createContextMenu(widget)
+        self.set_item_size(self.slider.value())
+        widget.show()
 
     def getAllImage(self, inPath):
         return bFc.getListDirK(inPath, 'file', '(.jpg)|(.png)|(.jpeg)')
 
+    def createContextMenu(self, widget):
+        widget.setContextMenuPolicy(Qt.CustomContextMenu)
+        widget.customContextMenuRequested.connect(self.showContextMenu)
+
+        # create menu
+        self.contextMenu = QMenu(self)
+
+        self.editAction = QAction(u'| 删除', self)
+        self.contextMenu.addAction(self.editAction)
+
+        self.editAction.triggered.connect(self.remove_item)
+
+    def remove_item(self):
+        wgt = initUI.image_widget.prevSelected
+        if not wgt:
+            return
+        self.clear_item(wgt)
+
 
 class dialogItem(QDialog, editItemDialog.Ui_Dialog):
-    def __init__(self, conf='edit', **kwargs):
-        super(dialogItem, self).__init__(**kwargs)
 
-        self.conf = conf
+    def __init__(self, parent=None, conf='edit', **kwargs):
+        super(dialogItem, self).__init__(parent)
 
         self.setupUi(self)
-        self.setWindowTitle(conf)
 
-        self.image_widget = image_widget(parent=self)
-        # VLay = QVBoxLayout(self.frame_asset)
+        self.conf, self.kwargs, self.typeG = conf, kwargs, None
+
+        self.image_widget = image_frame(self)
         self.verticalLayout_3.addWidget(self.image_widget)
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        self.image_widget.setSizePolicy(sizePolicy)
+        # sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # self.image_widget.setSizePolicy(sizePolicy)
 
-        # self.frame_asset
+        if self.conf == 'edit':
+            self.initUI_edit()
+        elif self.conf == 'add':
+            self.initUI_add()
 
-        if conf == 'edit':
-            self.edit_item()
+        self.image_widget.layout()
 
-        elif conf == 'add':
-            self.add_item()
+    def initUI_add(self):
+        self.typeG = self.kwargs.get('typeG')
+        self.lineEdit_ID.setText(self.kwargs.get('ID'))
 
-    def run(self):
-        chiness = self.lineEdit_cName.text()
-        spell = self.lineEdit_spell.text()
-        other = self.lineEdit_sOther.text()
-        lName = self.lineEdit_lName.text()
-        typ = self.lineEdit_type.text()
-        place = self.lineEdit_From.text()
-        ID = self.lineEdit_ID.text()
-        intro = self.textEdit_intro.toPlainText()
+    def initUI_edit(self):
+        temp_dict_bt = {'chineseName': self.lineEdit_cName,
+                        'spell': self.lineEdit_spell,
+                        'otherName': self.lineEdit_sOther,
+                        'SName': self.lineEdit_lName,
+                        'genera': self.lineEdit_type,
+                        'place': self.lineEdit_From,
+                        'ID': self.lineEdit_ID,
+                        'description': self.textEdit_intro,
+                        'title': self.label_title}
 
-    def get_label(self):
-        all_label = [each.text() for each in self.image_widget.children() if isinstance(each, QLabel)]
+        [temp_dict_bt[each].setText(self.kwargs[each]) for each in temp_dict_bt.keys() if self.kwargs.has_key(each)]
+        self.typeG = self.kwargs.get('typeG')
+        for each in self.kwargs.get('imagePath').split(';'):
+            print os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title'), each).replace('\\', '/')
+            self.image_widget.add_widget(
+                os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title'), each).replace('\\', '/'))
 
-        all_image_path = ';'.join(os.path.split(each) for each in self.image_widget.all_image)
+    def get_message(self):
+        temp_dict = {'chineseName': str(self.lineEdit_cName.text()),
+                     'spell': str(self.lineEdit_spell.text()),
+                     'otherName': str(self.lineEdit_sOther.text()),
+                     'SName': str(self.lineEdit_lName.text()),
+                     'genera': str(self.lineEdit_type.text()),
+                     'place': str(self.lineEdit_From.text()),
+                     'ID': str(self.lineEdit_ID.text()),
+                     'description': str(self.textEdit_intro.toPlainText()),
+                     'title': str(self.label_title.text()),
+                     'imagePath': self.get_label(str(self.label_title.text())),
+                     'typeG': self.typeG}
 
-    def add_item(self):
-        pass
+        return temp_dict
 
-    def edit_item(self, **kwargs):
-        pass
+    def get_label(self, title):
+        base_path = (each.__in_path__ for each in self.image_widget.Image_widget_list.values())
+        all_image_path = ';'.join('{0}/{1}'.format(title, os.path.split(each)[-1]) for each in base_path)
 
-    def submit_sql(self):
+        dir_path = os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title')).replace('\\', '/')
 
-        pass
+        os.path.exists(dir_path) or os.makedirs(dir_path)
+        for ser in base_path:
+            bFc.moveFileto(ser, dir_path)
+
+        return all_image_path
+
+    def submit_sql(self, **kwargs):
+        if self.conf == 'add':
+            sql.insertItem(**kwargs)
+        elif self.conf == 'edit':
+            sql.updateItem('ID="{}"'.format(kwargs.get('ID')), **kwargs)
+
+    def accept(self):
+        temp_dict = self.get_message()
+        self.submit_sql(**temp_dict)
+        super(dialogItem, self).accept()
 
 
 if __name__ == '__main__':
     app = QApplication([])
-    Form = dialogItem(conf='add')
+    Form = dialogItem(conf='add', typeG='tst', ID='1dfasfdg')
     # Form = image_widget()
     Form.show()
     app.exec_()

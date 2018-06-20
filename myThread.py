@@ -29,6 +29,5 @@ class setItem(object):
         page = num / pageNum + 1
         self.mainC.pageW.comboBoxNum.clear()
         self.mainC.pageW.comboBoxNum.addItems([str(i) for i in range(1, page+1)])
-
         self.mainC.add_item(getItems[0:pageNum])
 

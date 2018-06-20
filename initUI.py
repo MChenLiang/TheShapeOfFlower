@@ -259,7 +259,8 @@ class image_widget(QWidget):
             self.args = args
             self.id, self.chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
             self.set_font(self.chineseName)
-            self.imagePath = [os.path.join(_conf.get(baseEnv.configuration, baseEnv.path), 'DATA/Image', title,  _) for _ in imagePath.split(';')]
+            self.imagePath = [os.path.join(_conf.get(baseEnv.configuration, baseEnv.path), 'DATA/Image', title, _) for _
+                              in imagePath.split(';')]
             self.set_in_path(self.imagePath[0])
 
     def set_in_path(self, in_path):
@@ -393,6 +394,14 @@ class picture_prev(QFrame):
                 widget.deleteLater()
         self.Image_widget_list.clear()
 
+    def clear_item(self, widget):
+        if widget.prevSelected is not None:
+            widget.setParent(None)
+            self.Image_widget_list.pop(str(widget.id))
+            widget.prevSelected = None
+            widget.deleteLater()
+            self.layout()
+
     def add_widget(self, widget):
         widget.setParent(self.item_area)
         self.Image_widget_list.setdefault(str(widget.id), widget)
@@ -419,7 +428,7 @@ class picture_prev(QFrame):
             space_x = 0
             if self.auto_space:
                 space_x = (main_w - 30 - self.asset_space * 2 - num_x * (
-                    self.THUMB_WIDTH + self.asset_space)) / num_x
+                        self.THUMB_WIDTH + self.asset_space)) / num_x
             widgets[i].move(self.asset_space * 1 + x * (self.THUMB_WIDTH + self.asset_space + space_x),
                             self.asset_space * 1 + y * (self.THUMB_HEIGHT + self.asset_space))
             x += 1

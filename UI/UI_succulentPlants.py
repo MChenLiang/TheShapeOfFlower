@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:/MCL/succulentPlants/UI\UI_succulentPlants.ui'
+# Form implementation generated from reading ui file 'E:/MCL/python/succulentPlants/UI\UI_succulentPlants.ui'
 #
-# Created: Sat Jun 16 21:46:14 2018
+# Created: Thu Jun 21 00:42:38 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
