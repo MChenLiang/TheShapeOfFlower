@@ -16,8 +16,8 @@ import __init__
 import baseEnv
 import editConf
 
-reload(sys)
-sys.setdefaultencoding('UTF-8')
+# reload(sys)
+# sys.setdefaultencoding('UTF-8')
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 pushbutton_qss = editConf.conf().get(baseEnv.qss, baseEnv.button)
@@ -29,7 +29,7 @@ _conf = editConf.conf()
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 def icon_path(in_name):
-    return os.path.join(__start_path__, 'UI/icons', in_name).replace('\\', '/')
+    return u'%s' % os.path.join(__start_path__, 'UI/icons', in_name).replace('\\', '/')
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -173,6 +173,8 @@ class asset_button(QPushButton):
 class asset_label(QWidget):
     def __init__(self, iconPath, *args):
         super(asset_label, self).__init__(*args)
+        if not os.path.exists(iconPath):
+            sys.stdout.write(u'\r\n没有找到这个文件：\n%s\n' % iconPath)
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setFixedSize(30, 30)
@@ -259,11 +261,17 @@ class image_widget(QWidget):
             self.args = args
             self.id, self.chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
             self.set_font(self.chineseName)
-            self.imagePath = [os.path.join(_conf.get(baseEnv.configuration, baseEnv.path), 'DATA/Image', title, _) for _
-                              in imagePath.split(';')]
+            self.imagePath = [u'%s' % os.path.join(_conf.get(baseEnv.configuration, baseEnv.path),
+                                                   'DATA/Image',
+                                                   title,
+                                                   _).replace('\\', '/')
+                              for _ in imagePath.split(';')]
             self.set_in_path(self.imagePath[0])
 
     def set_in_path(self, in_path):
+        if not os.path.exists(in_path):
+            sys.stdout.write('\r\n这个路径没了啊!!!\n%s' % in_path)
+            return
         self.__in_path__ = in_path.replace('\\', '/')
         self.__flag__ = os.path.splitext(in_path)[-1]
         if self.__flag__ in self.jpg_list:

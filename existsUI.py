@@ -4,8 +4,9 @@ __author__ = 'miaoChenLiang'
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 # import++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-# ↓++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+# ↓+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import os
+import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import __init__
@@ -207,16 +208,20 @@ class imageDialog(QDialog):
         self.pixmap = QPixmap()
         if not args:
             self.reject()
-        self.imageList = args
-
+        self.imageList = [u'%s' % each for each in args if os.path.exists(each) and os.path.isfile(each)]
         self.defNum = 0
 
-        self.l_P = mLabel(-1)
-        self.l_P.setParent(self)
-        self.r_P = mLabel(1)
-        self.r_P.setParent(self)
+        if not len(self.imageList):
+            sys.stdout.write(u'\r\n这个没有图片~~！\n')
+            self.imageList = [icon_path('file_error.jpg')]
+        else:
 
-        self.changeImage(0)
+            self.l_P = mLabel(-1)
+            self.l_P.setParent(self)
+            self.r_P = mLabel(1)
+            self.r_P.setParent(self)
+
+            self.changeImage(0)
 
     def changeImage(self, k):
         if self.defNum == self.imageList.__len__() - 1:
@@ -264,19 +269,11 @@ class imageDialog(QDialog):
 
 class mLabel(QWidget):
     def __init__(self, ID, *args):
-        # def __init__(self, imagePath, ID, *args):
         super(mLabel, self).__init__(*args)
         self.ID = ID
-        # pixmap = QPixmap(imagePath)
-        # picSize = QSize(60, 60)
-        # self.scaledMap = pixmap.scaled(picSize, Qt.KeepAspectRatio)
 
     def mousePressEvent(self, event):
         self.parent().changeImage(self.ID)
-
-        # def enterEvent(self, event):
-        #     cursor = QCursor(self.scaledMap, -1, -1)
-        #     self.setCursor(cursor)
 
 
 if __name__ == '__main__':

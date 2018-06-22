@@ -190,7 +190,6 @@ class openUI(QMainWindow):
         if splList.__len__() == 2:
             typeG += '->{}'.format(splList[0])
 
-        print 'add --->> '
 
     def asset_edit(self):
         if not self.get_selection_item():
@@ -211,7 +210,6 @@ class openUI(QMainWindow):
 
     def setAllItem(self, sender):
         self.inP = sender
-        print self.inP.text()
         self.all_item = list()
         sep = int(self.pageW.spin.currentText())
         allNum = self.all_item.__len__()

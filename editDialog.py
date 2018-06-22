@@ -180,14 +180,15 @@ class image_frame(initUI.picture_prev):
             super(image_frame, self).dropEvent(event)
 
     def add_widget(self, imagePath):
-        widget = initUI.image_widget(parent=self.item_area)
-        widget.set_in_path(imagePath)
-        widget.id = imagePath
+        if os.path.isfile(imagePath):
+            widget = initUI.image_widget(parent=self.item_area)
+            widget.set_in_path(imagePath)
+            widget.id = imagePath
 
-        self.Image_widget_list.setdefault(str(widget.id), widget)
-        self.createContextMenu(widget)
-        self.set_item_size(self.slider.value())
-        widget.show()
+            self.Image_widget_list.setdefault(str(widget.id), widget)
+            self.createContextMenu(widget)
+            self.set_item_size(self.slider.value())
+            widget.show()
 
     def getAllImage(self, inPath):
         return bFc.getListDirK(inPath, 'file', '(.jpg)|(.png)|(.jpeg)')
@@ -222,10 +223,6 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
 
         self.image_widget = image_frame(self)
         self.verticalLayout_3.addWidget(self.image_widget)
-        # sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        # sizePolicy.setHorizontalStretch(0)
-        # sizePolicy.setVerticalStretch(0)
-        # self.image_widget.setSizePolicy(sizePolicy)
 
         if self.conf == 'edit':
             self.initUI_edit()
@@ -252,9 +249,21 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
         [temp_dict_bt[each].setText(self.kwargs[each]) for each in temp_dict_bt.keys() if self.kwargs.has_key(each)]
         self.typeG = self.kwargs.get('typeG')
         for each in self.kwargs.get('imagePath').split(';'):
-            print os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title'), each).replace('\\', '/')
             self.image_widget.add_widget(
                 os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title'), each).replace('\\', '/'))
+
+    def get_label(self, title):
+        base_path = (each.__in_path__ for each in self.image_widget.Image_widget_list.values())
+        all_image_path = ';'.join(u'{}'.format(os.path.split(each)[-1]) for each in base_path)
+
+        dir_path = u'%s' % os.path.join(__start_path__, 'DATA/Image', title).replace('\\', '/')
+
+        os.path.exists(dir_path) or os.makedirs(dir_path)
+
+        for ser in base_path:
+            bFc.moveFileto(ser, dir_path)
+
+        return all_image_path
 
     def get_message(self):
         temp_dict = {'chineseName': str(self.lineEdit_cName.text()),
@@ -271,23 +280,15 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
 
         return temp_dict
 
-    def get_label(self, title):
-        base_path = (each.__in_path__ for each in self.image_widget.Image_widget_list.values())
-        all_image_path = ';'.join('{0}/{1}'.format(title, os.path.split(each)[-1]) for each in base_path)
-
-        dir_path = os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title')).replace('\\', '/')
-
-        os.path.exists(dir_path) or os.makedirs(dir_path)
-        for ser in base_path:
-            bFc.moveFileto(ser, dir_path)
-
-        return all_image_path
-
     def submit_sql(self, **kwargs):
         if self.conf == 'add':
             sql.insertItem(**kwargs)
         elif self.conf == 'edit':
             sql.updateItem('ID="{}"'.format(kwargs.get('ID')), **kwargs)
+            pass
+
+        for (k, v) in kwargs.items():
+            print '\t\t', k, '-->>', v
 
     def accept(self):
         temp_dict = self.get_message()
