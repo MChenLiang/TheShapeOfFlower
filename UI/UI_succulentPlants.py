@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'E:/MCL/python/succulentPlants/UI\UI_succulentPlants.ui'
 #
-# Created: Thu Jun 21 00:42:38 2018
+# Created: Sun Jun 24 14:58:57 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -154,15 +154,6 @@ class Ui_Form(object):
         self.textEdit_intro.setObjectName(_fromUtf8("textEdit_intro"))
         self.verticalLayout_2.addWidget(self.textEdit_intro)
         self.verticalLayout.addWidget(self.widget_message)
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
-        self.horizontalLayout_2.setSpacing(0)
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem)
-        self.pushButton_edit = QtGui.QPushButton(self.frame_3)
-        self.pushButton_edit.setObjectName(_fromUtf8("pushButton_edit"))
-        self.horizontalLayout_2.addWidget(self.pushButton_edit)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.horizontalLayout.addWidget(self.frame_3)
 
         self.retranslateUi(Form)
@@ -178,6 +169,5 @@ class Ui_Form(object):
         self.label_type.setText(_translate("Form", "科属     ：", None))
         self.label_lName.setText(_translate("Form", "拉丁学名 ：", None))
         self.label_ID.setText(_translate("Form", "ID       ：", None))
-        self.pushButton_edit.setText(_translate("Form", "修改", None))
 
 import succulentPlants_rc

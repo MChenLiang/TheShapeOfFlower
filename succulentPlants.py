@@ -7,6 +7,7 @@ __author__ = 'miaochenliang'
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import os
 import sys
+import uuid
 from functools import partial
 
 from PyQt4.QtCore import *
@@ -16,10 +17,11 @@ import baseEnv
 import editConf
 import initUI
 import myThread
-from DATA import typeEdit
+from DATA import typeEdit, sqlEdit
 import existsUI as exUI
 from MUtils import openUI as mUI
 import editDialog
+from collections import defaultdict
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 from UI import UI_succulentPlants
@@ -30,6 +32,7 @@ reload(UI_succulentPlants)
 reload(typeEdit)
 reload(myThread)
 reload(editDialog)
+reload(exUI)
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import __init__
@@ -39,6 +42,8 @@ _conf = editConf.conf()
 
 __win_name__ = _conf.get(baseEnv.configuration, baseEnv.name)
 __version__ = _conf.get(baseEnv.configuration, baseEnv.version)
+
+sql = sqlEdit.sqlEdit()
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -53,7 +58,7 @@ class openUI(QMainWindow):
         self.UI()
         self.selTree = None
         self.allSel = list()
-        self.imageDict = dict()
+        self.imageDict = defaultdict()
 
     # UI log in +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     def UI(self):
@@ -186,10 +191,16 @@ class openUI(QMainWindow):
             mUI.show_warning('Must Select one type!!!', 'W')
             return
         typeG = selTreeView
+        print selTreeView
         splList = selTreeView.split('->')
         if splList.__len__() == 2:
-            typeG += '->{}'.format(splList[0])
+            typeG = ';{}'.format(splList[0]) + typeG
+        kwg = {'typeG': typeG,
+               'ID': str(uuid.uuid1())}
 
+        self.edDialog = editDialog.dialogItem(parent=self, conf='add', **kwg)
+        if self.edDialog.exec_():
+            self.updateSelTree_sql()
 
     def asset_edit(self):
         if not self.get_selection_item():
@@ -205,8 +216,17 @@ class openUI(QMainWindow):
         if not mUI.show_warning(u'Are you sure you want to delete {} ???'.format(sel.chineseName), 'a'):
             return
         else:
+            sql.deleteItem('ID="%s"' % sel.id)
+            self.updateSelTree_sql()
+            print 'delect --- >> %s' % sel.chineseName
 
-            print 'delect --- >> '
+    def updateSelTree_sql(self):
+        num = self.pageW.comboBoxNum.currentIndex()
+        selStr = self.get_selection_treeView()
+        selStr in self.allSel and self.allSel.remove(selStr)
+        self.t.start(conf=True)
+        self.pageW.comboBoxNum.setCurrentIndex(num)
+        self.on_page_comboBox_changed()
 
     def setAllItem(self, sender):
         self.inP = sender

@@ -31,6 +31,10 @@ class sqlEdit(object):
 
         self.ctSql.updateItem(beG, editG)
 
+    def deleteItem(self, beG):
+        self.ctSql.deleteItem(beG)
+
+
 
 if __name__ == '__main__':
     sql = sqlEdit()

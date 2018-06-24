@@ -57,14 +57,11 @@ class editItem(QDialog, editItemDialog.Ui_Dialog):
                        'title': self.label_title
                        }
         self.otList = {self.typG: 'typeG', self.imageP: 'imagePath'}
-        # keys = ['id', 'chineseName', 'spell', 'otherName', 'SName', 'genera', 'place', 'description', 'imagePath', 'title', 'typeG']
 
         self.init_ui()
 
     def init_ui(self):
-        # keys = ['id', 'chineseName', 'spell', 'otherName', 'SName', 'genera', 'place', 'description', 'imagePath', 'title', 'typeG']
-        # vals = [self.kwg[each] for each in keys]
-        # self.picture_frame.setParent(self)
+
         if self.conf == 'edit':
             for (k, v) in self.kwg.items():
                 self.btDict.has_key(k) and self.btDict[k].setText(v)
@@ -75,8 +72,6 @@ class editItem(QDialog, editItemDialog.Ui_Dialog):
             for each in self.imageP.split(';'):
                 self.addImage(each)
 
-                # self.VLay.addWidget(self.picture_frame)
-
     def edit_item(self):
         pass
 
@@ -84,7 +79,6 @@ class editItem(QDialog, editItemDialog.Ui_Dialog):
         pushbutton = QPushButton(self)
         pushbutton.image = image
 
-        # self.addAttr(pushbutton, image=image)
         pushbutton.setIcon(QIcon(image))
         pushbutton.setFlat(True)
         pushbutton.setIconSize(QSize(120, 120))
@@ -92,9 +86,6 @@ class editItem(QDialog, editItemDialog.Ui_Dialog):
         pushbutton.setStyleSheet('QPushButton{border:none;}')
         pushbutton.setChecked(True)
         pushbutton.setObjectName(image)
-        # label = QLabel(self)
-        # label.setPixmap(QPixmap(image))
-        # label.setFixedSize(80, 80)
         pushbutton.clicked.connect(self.showImage)
         self.VLay.addWidget(pushbutton)
 
@@ -180,10 +171,11 @@ class image_frame(initUI.picture_prev):
             super(image_frame, self).dropEvent(event)
 
     def add_widget(self, imagePath):
+        print self.size()
         if os.path.isfile(imagePath):
             widget = initUI.image_widget(parent=self.item_area)
             widget.set_in_path(imagePath)
-            widget.id = imagePath
+            widget.ID = imagePath
 
             self.Image_widget_list.setdefault(str(widget.id), widget)
             self.createContextMenu(widget)
@@ -222,14 +214,18 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
         self.conf, self.kwargs, self.typeG = conf, kwargs, None
 
         self.image_widget = image_frame(self)
-        self.verticalLayout_3.addWidget(self.image_widget)
+        self.horizontalLayout.addWidget(self.image_widget)
+        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.image_widget.sizePolicy().hasHeightForWidth())
+        self.image_widget.setSizePolicy(sizePolicy)
+        self.image_widget.setMinimumWidth(460)
 
         if self.conf == 'edit':
             self.initUI_edit()
         elif self.conf == 'add':
             self.initUI_add()
-
-        self.image_widget.layout()
 
     def initUI_add(self):
         self.typeG = self.kwargs.get('typeG')
@@ -250,7 +246,7 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
         self.typeG = self.kwargs.get('typeG')
         for each in self.kwargs.get('imagePath').split(';'):
             self.image_widget.add_widget(
-                os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title'), each).replace('\\', '/'))
+                u'%s' % os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title'), each).replace('\\', '/'))
 
     def get_label(self, title):
         base_path = (each.__in_path__ for each in self.image_widget.Image_widget_list.values())
@@ -285,7 +281,6 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
             sql.insertItem(**kwargs)
         elif self.conf == 'edit':
             sql.updateItem('ID="{}"'.format(kwargs.get('ID')), **kwargs)
-            pass
 
         for (k, v) in kwargs.items():
             print '\t\t', k, '-->>', v
@@ -294,6 +289,9 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
         temp_dict = self.get_message()
         self.submit_sql(**temp_dict)
         super(dialogItem, self).accept()
+
+    def show(self):
+        super(dialogItem, self).show()
 
 
 if __name__ == '__main__':

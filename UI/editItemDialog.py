@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'E:/MCL/python/succulentPlants/UI\editItemDialog.ui'
 #
-# Created: Thu Jun 21 00:42:38 2018
+# Created: Sun Jun 24 14:58:57 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -116,21 +116,6 @@ class Ui_Dialog(object):
         self.textEdit_intro.setObjectName(_fromUtf8("textEdit_intro"))
         self.verticalLayout_2.addWidget(self.textEdit_intro)
         self.horizontalLayout.addWidget(self.frame_message)
-        self.frame_asset = QtGui.QFrame(Dialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.frame_asset.sizePolicy().hasHeightForWidth())
-        self.frame_asset.setSizePolicy(sizePolicy)
-        self.frame_asset.setMinimumSize(QtCore.QSize(460, 0))
-        self.frame_asset.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.frame_asset.setFrameShape(QtGui.QFrame.Box)
-        self.frame_asset.setObjectName(_fromUtf8("frame_asset"))
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.frame_asset)
-        self.verticalLayout_3.setSpacing(0)
-        self.verticalLayout_3.setMargin(0)
-        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
-        self.horizontalLayout.addWidget(self.frame_asset)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)

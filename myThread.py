@@ -16,10 +16,12 @@ class setItem(object):
         self.beG = beG
         self.isUpdate = isUpdate
 
-    def start(self):
-        if self.isUpdate:
+    def start(self,   conf = False):
+        if self.isUpdate or conf:
             sql = sqlEdit.sqlEdit()
             getItems = allItem = sql.queryItem(self.beG)
+            self.mainC.imageDict.pop(self.beG, None)
+            # self.mainC.imageDict[self.beG] = allItem
             self.mainC.imageDict.setdefault(self.beG, allItem)
         else:
             getItems = self.mainC.imageDict.get(self.beG)

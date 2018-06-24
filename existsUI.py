@@ -213,7 +213,7 @@ class imageDialog(QDialog):
 
         if not len(self.imageList):
             sys.stdout.write(u'\r\n这个没有图片~~！\n')
-            self.imageList = [icon_path('file_error.jpg')]
+            self.imageList = [icon_path('file_error.png')]
         else:
 
             self.l_P = mLabel(-1)
@@ -273,7 +273,10 @@ class mLabel(QWidget):
         self.ID = ID
 
     def mousePressEvent(self, event):
-        self.parent().changeImage(self.ID)
+        if event.buttons() == Qt.LeftButton:
+            self.parent().changeImage(self.ID)
+        else:
+            self.parent().accept()
 
 
 if __name__ == '__main__':
