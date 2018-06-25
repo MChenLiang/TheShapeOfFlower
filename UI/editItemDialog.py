@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'E:/MCL/python/succulentPlants/UI\editItemDialog.ui'
 #
-# Created: Sun Jun 24 14:58:57 2018
+# Created: Mon Jun 25 22:54:56 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,15 +43,13 @@ class Ui_Dialog(object):
         self.frame_message.setObjectName(_fromUtf8("frame_message"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.frame_message)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.label_title = QtGui.QLabel(self.frame_message)
+        self.lineEdit_title = QtGui.QLineEdit(self.frame_message)
         font = QtGui.QFont()
         font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_title.setFont(font)
-        self.label_title.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_title.setObjectName(_fromUtf8("label_title"))
-        self.verticalLayout_2.addWidget(self.label_title)
+        self.lineEdit_title.setFont(font)
+        self.lineEdit_title.setAlignment(QtCore.Qt.AlignCenter)
+        self.lineEdit_title.setObjectName(_fromUtf8("lineEdit_title"))
+        self.verticalLayout_2.addWidget(self.lineEdit_title)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.label_From = QtGui.QLabel(self.frame_message)
@@ -59,7 +57,9 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.label_From, 5, 0, 1, 1)
         self.lineEdit_cName = QtGui.QLineEdit(self.frame_message)
         self.lineEdit_cName.setEnabled(True)
+        self.lineEdit_cName.setAutoFillBackground(False)
         self.lineEdit_cName.setFrame(False)
+        self.lineEdit_cName.setReadOnly(False)
         self.lineEdit_cName.setObjectName(_fromUtf8("lineEdit_cName"))
         self.gridLayout.addWidget(self.lineEdit_cName, 0, 1, 1, 1)
         self.label_spell = QtGui.QLabel(self.frame_message)
@@ -130,7 +130,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
-        self.label_title.setText(_translate("Dialog", "标题", None))
+        self.lineEdit_title.setText(_translate("Dialog", "标题", None))
         self.label_From.setText(_translate("Dialog", "产地分布 ：", None))
         self.label_spell.setText(_translate("Dialog", "拼音     ：", None))
         self.label_sOther.setText(_translate("Dialog", "别称     ：", None))

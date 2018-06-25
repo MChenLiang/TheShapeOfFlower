@@ -148,14 +148,14 @@ class getMessage(object):
 
         for (k, v) in all_dict.items():
             http_image = v.get('imagePath').split(';')
-            # map(lambda x: download_image(x, os.path.join(dirP, k, os.path.split(x)[-1])), http_image)
+            map(lambda x: download_image(x, os.path.join(dirP, k, os.path.split(x)[-1])), http_image)
 
-            image_f = ';'.join(os.path.split(each)[-1] for each in http_image)
-
-            v.setdefault('title', k)
-            v.pop('imagePath')
-            v.setdefault('imagePath', image_f)
-            self.sql.insertItem(**v)
+            # image_f = ';'.join(os.path.split(each)[-1] for each in http_image)
+            #
+            # v.setdefault('title', k)
+            # v.pop('imagePath')
+            # v.setdefault('imagePath', image_f)
+            # self.sql.insertItem(**v)
 
     def get_all_html(self):
         bsObj = BeautifulSoup(self.html, "html.parser", from_encoding='GB2312')
