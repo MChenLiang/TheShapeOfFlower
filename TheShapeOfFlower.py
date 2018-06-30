@@ -12,12 +12,14 @@ __author__ = 'miaochenliang'
 import os
 import sys
 import uuid
+import psutil
 from collections import defaultdict
 from functools import partial
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+import find_ui
 import baseEnv
 import editConf
 import editDialog
@@ -75,10 +77,11 @@ class openUI(QMainWindow):
 
         self.__init__ui__()
         self.bt_clicked()
+        self.add_tray()
 
     # connect +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     def __init__ui__(self):
-        self.setWindowIcon(QIcon(icon_path('window_icon.png')))
+        self.setWindowIcon(QIcon(icon_path('window_icon.ico')))
         self.init_asset_menu()
         widget_asset = self.win.widget_asset
         HBox = QHBoxLayout(widget_asset)
@@ -315,9 +318,83 @@ class openUI(QMainWindow):
             for each in lList:
                 each.clear()
 
+    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    # add tray ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    def add_tray(self):
+        self.trayIcon = QSystemTrayIcon(self)
+        self.trayIcon.setIcon(QIcon(icon_path('window_icon.png')))
+        self.trayIcon.show()
+        self.trayIcon.activated.connect(self.trayClick)
+        self.trayMenu()
+
+    def trayClick(self, reason):
+        if reason == QSystemTrayIcon.DoubleClick:
+            self.showNormal()
+
+        elif reason == QSystemTrayIcon.MiddleClick:
+            self.showMessage()
+        else:
+            pass
+
+    def showMessage(self):
+        icon = QSystemTrayIcon.Information
+        in_text = 'soft :{}\r\n'.format(__win_name__)
+        in_text += 'version : {}\r\n'.format(__version__)
+        in_text += 'author : {}\r\n'.format(__author__)
+        self.trayIcon.showMessage('introduce : ', in_text, icon)
+
+    def trayMenu(self):
+
+        img_main = QIcon(icon_path('window_icon.ico'))
+        img_min = QIcon(icon_path('min_in.png'))
+        img_exit = QIcon(icon_path('del_in.png'))
+
+        self.trayIcon.setToolTip('{0}--{1}'.format(__win_name__, __version__))
+
+        self.restoreAction = QAction(img_main, __win_name__, self)
+        self.minAction = QAction(img_min, "Minimize", self)
+        self.quitAction = QAction(img_exit, "Exit", self)
+
+        self.trayIconMenu = QMenu(self)
+        self.trayIconMenu.addAction(self.restoreAction)
+        self.trayIconMenu.addAction(self.minAction)
+        self.trayIconMenu.addSeparator()
+        self.trayIconMenu.addAction(self.quitAction)
+        self.trayIcon.setContextMenu(self.trayIconMenu)
+
+        self.restoreAction.triggered.connect(self.max_action)
+        self.minAction.triggered.connect(self.min_action)
+        self.quitAction.triggered.connect(self.exit_action)
+
+    def min_action(self):
+        self.showMinimized()
+
+    def max_action(self):
+        self.actions()
+        self.showNormal()
+
+    def exit_action(self):
+        self.trayIcon.deleteLater()
+        self.deleteLater()
+
 
 # main ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 if __name__ == '__main__':
+    current_proc = psutil.Process()
+    # create_lnk.create_all_lnk(os.getcwd())
+    if current_proc.name() == 'python.exe':
+        pass
+
+    else:
+        if '192.168' in current_proc.exe():
+            current_proc.kill()
+        for proc in psutil.process_iter():
+            if proc.name() != current_proc.name():
+                continue
+            if proc.pid != current_proc.pid:
+                find_ui.delete_ui('QMainWindow', __win_name__)
+
     app = QApplication(sys.argv)
     anim_path = icon_path('waiting.gif')
     # 加载主程序

@@ -180,8 +180,6 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
         elif self.conf == 'edit':
             sql.updateItem('ID="{}"'.format(kwargs.get('ID')), **kwargs)
 
-        for (k, v) in kwargs.items():
-            print '\t\t', k, '-->>', v
 
     def accept(self):
         self.cName = list(str(self.lineEdit_cName.text()).decode('utf-8').strip())

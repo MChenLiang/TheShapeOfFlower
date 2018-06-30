@@ -20,7 +20,7 @@ if __name__ == '__main__':
             r'--distpath=%s' % os.path.join(exe_dir, 'exe/dist'),
             r'--workpath=%s' % os.path.join(exe_dir, 'exe/build'),
             r'--specpath=%s' % exe_dir,
-            # r'--icon=%s' % os.path.join(exe_dir, "UI/icons/window_icon.png")
+            r'--icon=%s' % os.path.join(exe_dir, "UI/icons/window_icon.ico").replace('\\', '/')
             ]
     run(opts)
 
