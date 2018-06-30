@@ -28,7 +28,7 @@ def find_window(cla_name, win_t):
 
 
 def delete_ui(cla_name, win_t):
-    find_ui.find_window(cla_name, win_t)
+    find_window(cla_name, win_t)
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
