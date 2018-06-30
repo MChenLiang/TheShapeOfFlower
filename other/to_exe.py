@@ -16,6 +16,7 @@ print 'exe_dir : ', exe_dir
 if __name__ == '__main__':
     opts = [os.path.join(exe_dir, 'TheShapeOfFlower.py'),
             # '-F',
+            '-y',
             r'--distpath=%s' % os.path.join(exe_dir, 'exe/dist'),
             r'--workpath=%s' % os.path.join(exe_dir, 'exe/build'),
             r'--specpath=%s' % exe_dir,

@@ -7,6 +7,8 @@ __author__ = 'miaochenliang'
 import uuid
 from sql import initSql
 
+reload(initSql)
+
 
 class sqlEdit(object):
     def __init__(self):

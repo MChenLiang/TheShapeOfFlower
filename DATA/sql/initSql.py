@@ -8,21 +8,10 @@ __author__ = 'miaochenliang'
 import os
 import sqlite3
 
-"""
-ct = ctSql()
-ct.connectSql()
-kwargs = {'title', 'TEXT',
-          'chineseName': 'a',
-          'spell': 'b',
-          'otherName': 'c',
-          'SName': 'd',
-          'genera': 'e',
-          'place': 'f',
-          'description': 'g',
-          'imagePath': 'h'}
-ct.createItem(**kwargs)
-"""
+import sys
+reload(sys)
 
+sys.setdefaultencoding('UTF-8')
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 class ctSql(object):
@@ -67,6 +56,8 @@ class ctSql(object):
         self.execute(sql)
 
     def execute(self, sql):
+        print 'in --->>', sql
+        print 'new'
         try:
             c = self.__cursor.execute(u'%s' % sql)
             self.__conn.commit()

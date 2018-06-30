@@ -34,6 +34,7 @@ reload(UI_succulentPlants)
 reload(typeEdit)
 reload(editDialog)
 reload(exUI)
+reload(sqlEdit)
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import __init__
