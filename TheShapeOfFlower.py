@@ -152,7 +152,7 @@ class openUI(QMainWindow):
 
     def get_data(self, selStr, isUpdata=True):
         if isUpdata:
-            beG = """typeG like "%{0}%" """.format(selStr)
+            beG = u'typeG like "%{}%" '.format(selStr)
             data = sql.queryItem(beG) or list()
             self.allSel.setdefault(selStr, data)
 
@@ -244,7 +244,7 @@ class openUI(QMainWindow):
         else:
             sql.deleteItem('ID="%s"' % sel.id)
             self.updateSelTree_sql()
-            mUI.show_warning('delect --- >> %s' % sel.chineseName, 's')
+            mUI.show_warning(u'delect --- >> %s' % sel.chineseName, 's')
 
     def updateSelTree_sql(self):
         num = self.pageW.comboBoxNum.currentIndex()

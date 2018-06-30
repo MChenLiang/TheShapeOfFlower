@@ -52,10 +52,10 @@ class ctSql(object):
         self.execute(sql)
 
     def execute(self, sql):
-        print 'in --->>', sql
-        print 'new'
+        print isinstance(sql.decode('UTF-8'), unicode)
+        print 'in --->>', sql.decode('UTF-8')
         try:
-            c = self.__cursor.execute(u'%s' % sql)
+            c = self.__cursor.execute(sql.decode('UTF-8'))
             self.__conn.commit()
             print 'Success >> '
         except (Exception, IOError) as e:
@@ -63,7 +63,7 @@ class ctSql(object):
             print 'Error >> '
             c = self.__conn.rollback()
         finally:
-            print 'sql -- >> ', sql
+            print 'sql -- >> ', sql.decode('UTF-8')
             return c
 
     def addCol(self, key, val):
@@ -81,7 +81,7 @@ class ctSql(object):
     def queryItem(self, beG=None):
         sql = """SELECT * FROM {0}""".format(self.__table_name)
         if beG:
-            sql += """ WHERE {}""".format(beG)
+            sql += """ WHERE {0}""".format(beG)
         return self.execute(sql)
 
     def updateItem(self, beG, editG):
