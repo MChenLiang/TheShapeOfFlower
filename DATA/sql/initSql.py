@@ -8,10 +8,6 @@ __author__ = 'miaochenliang'
 import os
 import sqlite3
 
-import sys
-reload(sys)
-
-sys.setdefaultencoding('UTF-8')
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 class ctSql(object):

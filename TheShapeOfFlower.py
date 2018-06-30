@@ -244,7 +244,7 @@ class openUI(QMainWindow):
         else:
             sql.deleteItem('ID="%s"' % sel.id)
             self.updateSelTree_sql()
-            print 'delect --- >> %s' % sel.chineseName
+            mUI.show_warning('delect --- >> %s' % sel.chineseName, 's')
 
     def updateSelTree_sql(self):
         num = self.pageW.comboBoxNum.currentIndex()
