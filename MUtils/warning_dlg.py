@@ -2,20 +2,13 @@
 # -*- coding:UTF-8 -*-
 __author__ = 'miaochenliang'
 
+import os
+
+from PyQt4.QtCore import *
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 # import++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 # ↓+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-try:
-    from PyQt4.QtGui import *
-    from PyQt4.QtCore import *
-except ImportError:
-    from PyQt5.QtGui import *
-    from PyQt5.QtCore import *
-    from PyQt5.QtWidgets import *
-
-import os
-import glob
-import random
+from PyQt4.QtGui import *
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 __abs_path__ = os.path.dirname(__file__).replace('\\', '/')

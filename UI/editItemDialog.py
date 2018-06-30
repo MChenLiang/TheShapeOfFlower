@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'E:/MCL/python/succulentPlants/UI\editItemDialog.ui'
 #
-# Created: Thu Jun 21 00:42:38 2018
+# Created: Mon Jun 25 22:54:56 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,15 +43,13 @@ class Ui_Dialog(object):
         self.frame_message.setObjectName(_fromUtf8("frame_message"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.frame_message)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.label_title = QtGui.QLabel(self.frame_message)
+        self.lineEdit_title = QtGui.QLineEdit(self.frame_message)
         font = QtGui.QFont()
         font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_title.setFont(font)
-        self.label_title.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_title.setObjectName(_fromUtf8("label_title"))
-        self.verticalLayout_2.addWidget(self.label_title)
+        self.lineEdit_title.setFont(font)
+        self.lineEdit_title.setAlignment(QtCore.Qt.AlignCenter)
+        self.lineEdit_title.setObjectName(_fromUtf8("lineEdit_title"))
+        self.verticalLayout_2.addWidget(self.lineEdit_title)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.label_From = QtGui.QLabel(self.frame_message)
@@ -59,7 +57,9 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.label_From, 5, 0, 1, 1)
         self.lineEdit_cName = QtGui.QLineEdit(self.frame_message)
         self.lineEdit_cName.setEnabled(True)
+        self.lineEdit_cName.setAutoFillBackground(False)
         self.lineEdit_cName.setFrame(False)
+        self.lineEdit_cName.setReadOnly(False)
         self.lineEdit_cName.setObjectName(_fromUtf8("lineEdit_cName"))
         self.gridLayout.addWidget(self.lineEdit_cName, 0, 1, 1, 1)
         self.label_spell = QtGui.QLabel(self.frame_message)
@@ -116,21 +116,6 @@ class Ui_Dialog(object):
         self.textEdit_intro.setObjectName(_fromUtf8("textEdit_intro"))
         self.verticalLayout_2.addWidget(self.textEdit_intro)
         self.horizontalLayout.addWidget(self.frame_message)
-        self.frame_asset = QtGui.QFrame(Dialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.frame_asset.sizePolicy().hasHeightForWidth())
-        self.frame_asset.setSizePolicy(sizePolicy)
-        self.frame_asset.setMinimumSize(QtCore.QSize(460, 0))
-        self.frame_asset.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.frame_asset.setFrameShape(QtGui.QFrame.Box)
-        self.frame_asset.setObjectName(_fromUtf8("frame_asset"))
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.frame_asset)
-        self.verticalLayout_3.setSpacing(0)
-        self.verticalLayout_3.setMargin(0)
-        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
-        self.horizontalLayout.addWidget(self.frame_asset)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -145,7 +130,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
-        self.label_title.setText(_translate("Dialog", "标题", None))
+        self.lineEdit_title.setText(_translate("Dialog", "标题", None))
         self.label_From.setText(_translate("Dialog", "产地分布 ：", None))
         self.label_spell.setText(_translate("Dialog", "拼音     ：", None))
         self.label_sOther.setText(_translate("Dialog", "别称     ：", None))

@@ -7,6 +7,8 @@ __author__ = 'miaochenliang'
 import uuid
 from sql import initSql
 
+reload(initSql)
+
 
 class sqlEdit(object):
     def __init__(self):
@@ -30,6 +32,10 @@ class sqlEdit(object):
         editG = ','.join(['%s="%s"' % (k, v.replace('"', "'")) for (k, v) in kwargs.items()])
 
         self.ctSql.updateItem(beG, editG)
+
+    def deleteItem(self, beG):
+        self.ctSql.deleteItem(beG)
+
 
 
 if __name__ == '__main__':

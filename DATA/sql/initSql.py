@@ -6,23 +6,7 @@ __author__ = 'miaochenliang'
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import os
-import json
 import sqlite3
-
-"""
-ct = ctSql()
-ct.connectSql()
-kwargs = {'title', 'TEXT',
-          'chineseName': 'a',
-          'spell': 'b',
-          'otherName': 'c',
-          'SName': 'd',
-          'genera': 'e',
-          'place': 'f',
-          'description': 'g',
-          'imagePath': 'h'}
-ct.createItem(**kwargs)
-"""
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -68,16 +52,18 @@ class ctSql(object):
         self.execute(sql)
 
     def execute(self, sql):
+        print isinstance(sql.decode('UTF-8'), unicode)
+        print 'in --->>', sql.decode('UTF-8')
         try:
-            c = self.__cursor.execute(sql)
+            c = self.__cursor.execute(sql.decode('UTF-8'))
             self.__conn.commit()
             print 'Success >> '
-        except Exception as e:
+        except (Exception, IOError) as e:
             print e
             print 'Error >> '
             c = self.__conn.rollback()
         finally:
-            print 'sql -- >> ', sql
+            print 'sql -- >> ', sql.decode('UTF-8')
             return c
 
     def addCol(self, key, val):
@@ -95,7 +81,7 @@ class ctSql(object):
     def queryItem(self, beG=None):
         sql = """SELECT * FROM {0}""".format(self.__table_name)
         if beG:
-            sql += """ WHERE {}""".format(beG)
+            sql += """ WHERE {0}""".format(beG)
         return self.execute(sql)
 
     def updateItem(self, beG, editG):

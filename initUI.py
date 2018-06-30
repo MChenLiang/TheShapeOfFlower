@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-# -*- coding:UTF-8 -*-
-__author__ = 'miaochenliang'
-
+# -*- coding: UTF-8 -*-
+# Time     :  23:46
+# Email    : spirit_az@foxmail.com
+# File     : initUI.py
+__author__ = 'ChenLiang.Miao'
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import math
 import os
@@ -15,9 +17,6 @@ from PyQt4.QtGui import *
 import __init__
 import baseEnv
 import editConf
-
-# reload(sys)
-# sys.setdefaultencoding('UTF-8')
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 pushbutton_qss = editConf.conf().get(baseEnv.qss, baseEnv.button)
@@ -82,7 +81,10 @@ class list_ui(QWidget):
         self.p.setAllItem(self.sender())
 
     def edit_item(self):
-        self.p.edit_item()
+        self.p.asset_edit()
+
+    def del_item(self):
+        self.p.asset_del()
 
     def pushButton(self, name):
         button = asset_button(self.setLabelShow, self.setLabelHide)
@@ -208,7 +210,6 @@ class asset_label(QWidget):
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 class image_widget(QWidget):
-    id = 0
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal()
     prevSelected = None
@@ -221,6 +222,7 @@ class image_widget(QWidget):
         super(image_widget, self).__init__(**kwargs)
         self.thumb = None
         self.version = ''
+        self.id = 0
         self.is_height = 0
         self.selected = False
         self.kwargs = kwargs
@@ -255,8 +257,15 @@ class image_widget(QWidget):
 
         self.setStyleSheet("QWidget{border:1px solid rgb(50, 50, 50);}")
 
+    @property
+    def ID(self):
+        return self.id
+
+    @ID.setter
+    def ID(self, id):
+        self.id = id
+
     def update(self, *args):
-        super(image_widget, self).update()
         if args:
             self.args = args
             self.id, self.chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
@@ -267,6 +276,7 @@ class image_widget(QWidget):
                                                    _).replace('\\', '/')
                               for _ in imagePath.split(';')]
             self.set_in_path(self.imagePath[0])
+        super(image_widget, self).update()
 
     def set_in_path(self, in_path):
         if not os.path.exists(in_path):
@@ -389,10 +399,7 @@ class picture_prev(QFrame):
         self.auto_space = 0
 
         self.setWindowOpacity(0.0)
-
         self.Image_widget_list = dict()
-
-        # self.set_item_size(107)
 
     def clearAll(self):
         widgets = self.item_area.children()
@@ -490,18 +497,12 @@ class picture_prev(QFrame):
         self.contextMenu = QMenu(self)
 
         self.editAction = QAction(u'| 编辑', self)
+        self.delAvtion = QAction(u'| 删除', self)
         self.contextMenu.addAction(self.editAction)
+        self.contextMenu.addAction(self.delAvtion)
 
         self.editAction.triggered.connect(self.parent().edit_item)
-
-        # self.actionA = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作A')
-        # self.actionB = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作B')
-        # self.actionC = self.contextMenu.addAction(QIcon("images/0.png"), u'|  动作C')
-        # # add second menu
-        # self.second = self.contextMenu.addMenu(QIcon("images/0.png"), u"|  二级菜单")
-        # self.actionD = self.second.addAction(QIcon("images/0.png"), u'|  动作A')
-        # self.actionE = self.second.addAction(QIcon("images/0.png"), u'|  动作B')
-        # self.actionF = self.second.addAction(QIcon("images/0.png"), u'|  动作C')
+        self.delAvtion.triggered.connect(self.parent().del_item)
 
     def showContextMenu(self):
         self.contextMenu.exec_(QCursor.pos())
@@ -544,8 +545,6 @@ class pageWidget(QWidget):
                 t.setFixedSize(60, 30)
             hBox.addWidget(t)
 
-            # self.comboBoxNum.addItems([str(i) for i in range(101)])
-
     def on_pushButton_clicked(self, typ):
         maxNum = self.comboBoxNum.count() - 1
         if typ == 0:
@@ -558,9 +557,3 @@ class pageWidget(QWidget):
             self.comboBoxNum.setCurrentIndex(changeIndex if changeIndex < maxNum else maxNum)
         else:
             self.comboBoxNum.setCurrentIndex(maxNum)
-
-# if __name__ == '__main__':
-#     app = QApplication([])
-#     ui = asset_label(icon_path('alp.png'))
-#     ui.show()
-#     app.exec_()

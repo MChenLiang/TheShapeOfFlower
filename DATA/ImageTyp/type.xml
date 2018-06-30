@@ -5,8 +5,8 @@
 		<Type name="观叶盆栽"/>
 		<Type name="兰科植物"/>
 		<Type name="多肉植物">
-			<genera name="番杏科(Aizoaceae)"/>
-			<genera name="景天科(Crassulaceae)"/>
+			<genera name="番杏科"/>
+			<genera name="景天科"/>
 			<genera name="仙人掌类"/>
 		</Type>
 		<Type name="一二年生花卉"/>
