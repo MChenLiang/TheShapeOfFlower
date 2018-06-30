@@ -1,10 +1,14 @@
-# !/user/bin/env python
+#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-__author__ = 'miaochenliang'
+# Time     :  17:45
+# Email    : spirit_az@foxmail.com
+# File     : TheShapeOfFlower.py
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+# +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ #
+__author__ = 'miaochenliang'
+# +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ #
+
+# +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ #
 import os
 import sys
 import uuid
@@ -23,6 +27,8 @@ from MUtils import openUI as mUI
 import editDialog
 from collections import defaultdict
 
+import chardet
+
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 from UI import UI_succulentPlants
 
@@ -30,7 +36,6 @@ from UI import UI_succulentPlants
 reload(initUI)
 reload(UI_succulentPlants)
 reload(typeEdit)
-reload(myThread)
 reload(editDialog)
 reload(exUI)
 
@@ -57,7 +62,7 @@ class openUI(QMainWindow):
         super(openUI, self).__init__(parent)
         self.UI()
         self.selTree = None
-        self.allSel = list()
+        self.allSel = defaultdict()
         self.imageDict = defaultdict()
 
     # UI log in +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -67,7 +72,7 @@ class openUI(QMainWindow):
         self.win.setupUi(self.pt)
         self.setCentralWidget(self.pt)
 
-        self.setWindowTitle(__win_name__)
+        self.setWindowTitle('{0}--{1}'.format(__win_name__, __version__))
         self.setObjectName(__win_name__)
 
         self.win.label_ID.hide()
@@ -144,24 +149,39 @@ class openUI(QMainWindow):
 
     def on_treeView_selectionChanged(self):
         selStr = self.get_selection_treeView()
+        sys.stdout.write(selStr)
+        if selStr not in self.allSel.keys():
+            self.get_data(selStr)
 
-        isUpdate = False
-        if selStr not in self.allSel:
-            self.allSel.append(selStr)
-            isUpdate = True
+        self.initPage(selStr)
 
-        self.selTree = beG = """typeG like "%{0}%" """.format(selStr)
-        self.t = myThread.setItem(self, beG, isUpdate=isUpdate)
-        self.t.start()
+    def get_data(self, selStr, isUpdata=True):
+        if isUpdata:
+            beG = """typeG like "%{0}%" """.format(selStr)
+            data = sql.queryItem(beG) or list()
+            self.allSel.setdefault(selStr, data)
+
+    def initPage(self, selStr=''):
+        if selStr and (not self.allSel.has_key(selStr)):
+            self.pageW.comboBoxNum.clear()
+            self.add_item(list())
+        else:
+            num = self.allSel[selStr].__len__()
+            pageNum = int(self.pageW.spin.currentText())
+            page = num / pageNum + 1
+            self.pageW.comboBoxNum.clear()
+            self.pageW.comboBoxNum.addItems([str(i) for i in range(1, page + 1)])
+            self.add_item(self.allSel[selStr][0:pageNum])
 
     def get_selection_treeView(self):
         indexs = self.win.treeView_type.selectedIndexes()
         if not indexs:
             return False
         index = indexs[0]
-        str_sel = str(index.data(0).toString())
-        str_p = str(index.parent().data(0).toString())
-        return '{0}->{1}'.format(str_p, str_sel) if str_p else str_sel
+        str_sel = index.data(0).toString()
+        str_p = index.parent().data(0).toString()
+
+        return u'{0}->{1}'.format(str_p, str_sel) if str_p else u"%s" % str_sel
 
     def get_selection_item(self):
         sel = [k for k in self.objWidget.Image_widget_list.values() if k.selected]
@@ -191,10 +211,9 @@ class openUI(QMainWindow):
             mUI.show_warning('Must Select one type!!!', 'W')
             return
         typeG = selTreeView
-        print selTreeView
         splList = selTreeView.split('->')
         if splList.__len__() == 2:
-            typeG = ';{}'.format(splList[0]) + typeG
+            typeG = u';{}'.format(splList[0]) + typeG
         kwg = {'typeG': typeG,
                'ID': str(uuid.uuid1())}
 
@@ -223,8 +242,10 @@ class openUI(QMainWindow):
     def updateSelTree_sql(self):
         num = self.pageW.comboBoxNum.currentIndex()
         selStr = self.get_selection_treeView()
-        selStr in self.allSel and self.allSel.remove(selStr)
-        self.t.start(conf=True)
+        self.get_data(selStr)
+        self.initPage(selStr)
+        maxCount = self.pageW.comboBoxNum.maxCount()
+        num = num if num <= maxCount else maxCount
         self.pageW.comboBoxNum.setCurrentIndex(num)
         self.on_page_comboBox_changed()
 
@@ -307,9 +328,9 @@ if __name__ == '__main__':
     anim_path = icon_path('waiting.gif')
     # 加载主程序
     Form = openUI()
-    # splash = exUI.mSplashScreen_new(anim_path, Qt.WindowStaysOnTopHint, Form)
-    # splash.show()
+    splash = exUI.mSplashScreen_new(anim_path, Qt.WindowStaysOnTopHint, Form)
+    splash.show()
     # # 添加提示信息
-    # splash.showMessage('author : %s' % __author__, Qt.AlignLeft | Qt.AlignBottom, Qt.yellow)
-    Form.show()
+    splash.showMessage('author : %s' % __author__, Qt.AlignLeft | Qt.AlignBottom, Qt.yellow)
+    # Form.show()
     sys.exit(app.exec_())

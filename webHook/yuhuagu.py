@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding:UTF-8 -*-
+# -*- coding:GB2312 -*-
 # @Time : 2018/5/5 13:51
 # @email : spirit_az@foxmail.com
 __author__ = 'miaochenliang'
@@ -27,25 +27,18 @@ User-Agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like G
 """
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import os
-import re
-import sys
-import json
 import urllib2
-import requests
-import multiprocessing
 from random import randint
+
+import requests
 from bs4 import BeautifulSoup
-from module import baseCommand as bcmds
 
-import baseEnv
-
-# æ•°æ®åº“çš„é“¾æŽ¥å°è£… è¿™é‡Œè¦æ”¹æˆè‡ªå·±çš„æ•°æ®åº“
+# Êý¾Ý¿âµÄÁ´½Ó·â×° ÕâÀïÒª¸Ä³É×Ô¼ºµÄÊý¾Ý¿â
 import DATA.sqlEdit as sqlEdit
 import pinyinMaster.spellChiness as spellChiness
+from module import baseCommand as bcmds
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-reload(sys)
-sys.setdefaultencoding('UTF-8')
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -70,14 +63,14 @@ def getAllUrlStr():
 
 
 def main():
-    """sqlite3 ä¸æ”¯æŒå¤šçº¿ç¨‹æˆ–å¤šè¿›ç¨‹ã€‚"""
-    sql = sqlEdit.sqlEdit()  # æ•°æ®åº“çš„å®žä¾‹
+    """sqlite3 ²»Ö§³Ö¶àÏß³Ì»ò¶à½ø³Ì¡£"""
+    sql = sqlEdit.sqlEdit()  # Êý¾Ý¿âµÄÊµÀý
     # sql = None
     for each in getAllUrlStr():
         getMessage(each, sql)
         # break
 
-    # ä¸‹é¢ä¸ºå¤šè¿›ç¨‹çš„ç½‘é¡µçˆ¬å–
+    # ÏÂÃæÎª¶à½ø³ÌµÄÍøÒ³ÅÀÈ¡
     # sql = sqlEdit.sqlEdit
     # pool = multiprocessing.Pool()
     # for each in getAllUrlStr():
@@ -114,7 +107,7 @@ class getMessage(object):
             request = urllib2.Request(each)
             html = urllib2.urlopen(request)
 
-            bsObj = BeautifulSoup(html, "html.parser", from_encoding='')
+            bsObj = BeautifulSoup(html, "html.parser", from_encoding='GB2312')
             body = bsObj.body.find('div', {'id': 'in_l'})
 
             title = bsObj.h1.children.next()
@@ -136,7 +129,7 @@ class getMessage(object):
             temp_dict.setdefault('SName', v_list[2])
             temp_dict.setdefault('genera', v_list[3])
             temp_dict.setdefault('place', v_list[4])
-            temp_dict.setdefault('typeG', u'å¤šè‚‰æ¤ç‰©;å¤šè‚‰æ¤ç‰©->ç•ªæç§‘(Aizoaceae)')
+            temp_dict.setdefault('typeG', '¶àÈâÖ²Îï;¶àÈâÖ²Îï->·¬ÐÓ¿Æ(Aizoaceae)')
 
             intro = body.find('p').children.next()
             temp_dict.setdefault('description', intro)
@@ -148,7 +141,8 @@ class getMessage(object):
 
         for (k, v) in all_dict.items():
             http_image = v.get('imagePath').split(';')
-            map(lambda x: download_image(x, os.path.join(dirP, k, os.path.split(x)[-1])), http_image)
+            print k, '--->', http_image
+            # map(lambda x: download_image(x, os.path.join(dirP, k, os.path.split(x)[-1])), http_image)
 
             # image_f = ';'.join(os.path.split(each)[-1] for each in http_image)
             #

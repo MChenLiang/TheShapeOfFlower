@@ -6,7 +6,6 @@ __author__ = 'miaochenliang'
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import os
-import json
 import sqlite3
 
 """
@@ -72,7 +71,7 @@ class ctSql(object):
             c = self.__cursor.execute(sql)
             self.__conn.commit()
             print 'Success >> '
-        except Exception as e:
+        except (Exception, IOError) as e:
             print e
             print 'Error >> '
             c = self.__conn.rollback()
