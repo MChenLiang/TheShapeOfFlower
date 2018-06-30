@@ -68,7 +68,7 @@ class ctSql(object):
 
     def execute(self, sql):
         try:
-            c = self.__cursor.execute(sql)
+            c = self.__cursor.execute(u'%s' % sql)
             self.__conn.commit()
             print 'Success >> '
         except (Exception, IOError) as e:

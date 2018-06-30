@@ -2,7 +2,8 @@
 # -*- coding: UTF-8 -*-
 # Time     :  23:46
 # Email    : spirit_az@foxmail.com
-# File     : .py
+# File     : initUI.py
+__author__ = 'ChenLiang.Miao'
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import math
 import os
@@ -80,7 +81,7 @@ class list_ui(QWidget):
         self.p.setAllItem(self.sender())
 
     def edit_item(self):
-        self.p.edit_item()
+        self.p.asset_edit()
 
     def del_item(self):
         self.p.asset_del()
@@ -265,7 +266,6 @@ class image_widget(QWidget):
         self.id = id
 
     def update(self, *args):
-        super(image_widget, self).update()
         if args:
             self.args = args
             self.id, self.chineseName, spell, otherName, SName, genera, place, description, imagePath, title, typeG = args
@@ -276,6 +276,7 @@ class image_widget(QWidget):
                                                    _).replace('\\', '/')
                               for _ in imagePath.split(';')]
             self.set_in_path(self.imagePath[0])
+        super(image_widget, self).update()
 
     def set_in_path(self, in_path):
         if not os.path.exists(in_path):

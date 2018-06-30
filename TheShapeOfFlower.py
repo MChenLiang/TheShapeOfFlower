@@ -12,6 +12,7 @@ __author__ = 'miaochenliang'
 import os
 import sys
 import uuid
+from collections import defaultdict
 from functools import partial
 
 from PyQt4.QtCore import *
@@ -19,16 +20,11 @@ from PyQt4.QtGui import *
 
 import baseEnv
 import editConf
-import initUI
-import myThread
-from DATA import typeEdit, sqlEdit
-import existsUI as exUI
-from MUtils import openUI as mUI
 import editDialog
-from collections import defaultdict
-
-import chardet
-
+import existsUI as exUI
+import initUI
+from DATA import typeEdit, sqlEdit
+from MUtils import openUI as mUI
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 from UI import UI_succulentPlants
 
@@ -61,9 +57,7 @@ class openUI(QMainWindow):
     def __init__(self, parent=None):
         super(openUI, self).__init__(parent)
         self.UI()
-        self.selTree = None
         self.allSel = defaultdict()
-        self.imageDict = defaultdict()
 
     # UI log in +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     def UI(self):
@@ -141,7 +135,7 @@ class openUI(QMainWindow):
     def on_page_comboBox_changed(self):
         page = int(self.pageW.comboBoxNum.currentText())
         num = int(self.pageW.spin.currentText())
-        allImage = self.imageDict[self.selTree]
+        allImage = self.allSel[self.get_selection_treeView()]
         tool = len(allImage)
         minNum = (page - 1) * num
         maxNum = page * num if tool > page * num else tool
@@ -225,6 +219,18 @@ class openUI(QMainWindow):
         if not self.get_selection_item():
             mUI.show_warning('Please selected only one item!!!', 'w')
             return
+        wgt = initUI.image_widget.prevSelected
+        if not wgt:
+            return
+        keys = ['ID', 'chineseName', 'spell', 'otherName', 'SName', 'genera', 'place',
+                'description', 'imagePath', 'title', 'typeG']
+        vals = wgt.args
+        kwg = dict()
+        for (k, v) in zip(keys, vals):
+            kwg.setdefault(k, v)
+        self.edDialog = editDialog.dialogItem(parent=self, conf='edit', **kwg)
+        if self.edDialog.exec_():
+            self.updateSelTree_sql()
 
     def asset_del(self):
         sel = self.get_selection_item()
@@ -281,19 +287,6 @@ class openUI(QMainWindow):
             wgt.show()
 
         widget.layout()
-
-    def edit_item(self):
-        wgt = initUI.image_widget.prevSelected
-        if not wgt:
-            return
-        keys = ['ID', 'chineseName', 'spell', 'otherName', 'SName', 'genera', 'place',
-                'description', 'imagePath', 'title', 'typeG']
-        vals = wgt.args
-        kwg = dict()
-        for (k, v) in zip(keys, vals):
-            kwg.setdefault(k, v)
-        self.edDialog = editDialog.dialogItem(parent=self, conf='edit', **kwg)
-        self.edDialog.exec_()
 
     def dlgImage(self, wgt):
         self.dlg = exUI.imageDialog(*wgt.imagePath)

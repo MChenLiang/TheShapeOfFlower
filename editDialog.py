@@ -140,14 +140,17 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
                 u'%s' % os.path.join(__start_path__, 'DATA/Image', self.kwargs.get('title'), each).replace('\\', '/'))
 
     def get_label(self, title):
-        base_path = (each.__in_path__ for each in self.image_widget.Image_widget_list.values())
+        base_path = [each.__in_path__ for each in self.image_widget.Image_widget_list.values()]
         all_image_path = ';'.join(u'{}'.format(os.path.split(each)[-1]) for each in base_path)
 
         dir_path = u'%s' % os.path.join(__start_path__, 'DATA/Image', title).replace('\\', '/')
 
         os.path.exists(dir_path) or os.makedirs(dir_path)
 
+        had = [os.path.normcase(os.path.join(dir_path, each)) for each in bFc.getListDir(dir_path, 'file')]
         for ser in base_path:
+            if os.path.normcase(ser) in had:
+                continue
             bFc.moveFileto(ser, dir_path)
 
         return all_image_path
@@ -186,7 +189,6 @@ class dialogItem(QDialog, editItemDialog.Ui_Dialog):
         while '  ' in self.spell:
             self.spell.replace('  ', ' ')
         self.spell = self.spell.split(' ')
-
 
         if len(self.cName) != len(self.spell):
             openUI.show_warning(u'拼音的个数和中文名对不上！！！', 'e')
