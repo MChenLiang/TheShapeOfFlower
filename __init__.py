@@ -49,7 +49,7 @@ def _init_conf(cf):
     cf.set(baseEnv.configuration, baseEnv.name, 'succulentPlants')
     cf.set(baseEnv.configuration, baseEnv.version, '1.0')
     cf.set(baseEnv.configuration, baseEnv.alphabet, map(chr, range(65, 91)))
-    cf.set(baseEnv.configuration, baseEnv.path, os.path.dirname(__file__))
+    cf.set(baseEnv.configuration, baseEnv.path, __start_path__)
 
 
 def _init_qss(cf):
