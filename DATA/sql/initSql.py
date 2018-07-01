@@ -52,15 +52,13 @@ class ctSql(object):
         self.execute(sql)
 
     def execute(self, sql):
-        print isinstance(sql.decode('UTF-8'), unicode)
-        print 'in --->>', sql.decode('UTF-8')
         try:
             c = self.__cursor.execute(sql.decode('UTF-8'))
             self.__conn.commit()
             print 'Success >> '
         except (Exception, IOError) as e:
-            print e
             print 'Error >> '
+            print e
             c = self.__conn.rollback()
         finally:
             print 'sql -- >> ', sql.decode('UTF-8')

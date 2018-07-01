@@ -119,6 +119,7 @@ class list_ui(QWidget):
 class search_button(QPushButton):
     def __init__(self, *args):
         super(search_button, self).__init__(*args)
+        self.setObjectName('pushButton_search')
         self.i = QIcon(icon_path('query_def.png'))
         self.setIcon(self.i)
         self.setFixedSize(15, 15)
@@ -179,7 +180,7 @@ class asset_label(QWidget):
             sys.stdout.write(u'\r\n没有找到这个文件：\n%s\n' % iconPath)
 
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setFixedSize(30, 30)
+        self.setFixedSize(40, 40)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
         self.labelBGround = QLabel(self)
@@ -189,15 +190,15 @@ class asset_label(QWidget):
         self.pixmap = QPixmap(iconPath)
         self.labelBGround.setPixmap(self.pixmap)
         self.labelBGround.setAttribute(Qt.WA_TranslucentBackground, True)
-        self.labelBGround.setGeometry(0, 0, 30, 30)
+        self.labelBGround.setGeometry(0, 0, 40, 40)
 
         self.labelTx = QLabel(self)
         font = QFont()
-        font.setPointSize(15)
+        font.setPointSize(16)
         self.labelTx.setFont(font)
         self.labelTx.setAlignment(Qt.AlignCenter)
         self.labelTx.setStyleSheet('color : white')
-        self.labelTx.setGeometry(1, 2, 25, 25)
+        self.labelTx.setGeometry(8, 10, 20, 20)
 
     @property
     def text(self):

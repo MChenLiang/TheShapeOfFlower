@@ -5,31 +5,41 @@
 __author__ = 'miaochenliang'
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+from PyQt4.QtCore import *
+
 from DATA import sqlEdit
+
+sql = sqlEdit.sqlEdit()
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-class setItem(object):
-    def __init__(self, mainC, beG, isUpdate=False):
-        super(setItem, self).__init__()
-        self.mainC = mainC
-        self.beG = beG
-        self.isUpdate = isUpdate
+class add_item(QThread):
+    signal = pyqtSignal(list)
 
-    def start(self,   conf = False):
-        if self.isUpdate or conf:
-            sql = sqlEdit.sqlEdit()
-            getItems = allItem = sql.queryItem(self.beG)
-            self.mainC.imageDict.pop(self.beG, None)
-            # self.mainC.imageDict[self.beG] = allItem
-            self.mainC.imageDict.setdefault(self.beG, allItem)
-        else:
-            getItems = self.mainC.imageDict.get(self.beG)
+    def __init__(self):
+        super(add_item, self).__init__()
+        self.selStr = str()
 
-        num = getItems.__len__()
-        pageNum = int(self.mainC.pageW.spin.currentText())
+    @property
+    def str_tree(self):
+        return self.selStr
+
+    @str_tree.setter
+    def str_tree(self, selStr):
+        self.selStr = selStr
+
+    @str_tree.getter
+    def str_tree(self):
+        return self.selStr
+
+    def run(self):
+        self.parent().pageW.comboBoxNum.clear()
+        message = self.parent().allSel[self.selStr] if self.parent().allSel.has_key(self.selStr) else list()
+        num = message.__len__()
+
+        pageNum = int(self.parent().pageW.spin.currentText())
         page = num / pageNum + 1
-        self.mainC.pageW.comboBoxNum.clear()
-        self.mainC.pageW.comboBoxNum.addItems([str(i) for i in range(1, page+1)])
-        self.mainC.add_item(getItems[0:pageNum])
+        self.parent().pageW.comboBoxNum.clear()
+        self.parent().pageW.comboBoxNum.addItems([str(i) for i in range(1, page + 1)])
 
+        self.signal.emit(message[0:pageNum])

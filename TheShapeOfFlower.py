@@ -25,6 +25,7 @@ import editConf
 import editDialog
 import existsUI as exUI
 import initUI
+import myThread
 from DATA import typeEdit, sqlEdit
 from MUtils import openUI as mUI
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -37,6 +38,7 @@ reload(typeEdit)
 reload(editDialog)
 reload(exUI)
 reload(sqlEdit)
+reload(myThread)
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 import __init__
@@ -57,10 +59,17 @@ def icon_path(in_name):
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 class openUI(QMainWindow):
+    keyword = None
+
     def __init__(self, parent=None):
         super(openUI, self).__init__(parent)
+
         self.UI()
         self.allSel = defaultdict()
+        self.t = myThread.add_item()
+        self.t.setParent(self)
+
+        self.t.signal.connect(self.add_items)
 
     # UI log in +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     def UI(self):
@@ -118,17 +127,18 @@ class openUI(QMainWindow):
             pItem.appendRow([item])
             self.initType(v, item)
 
-    # connect +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    # alp +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     def showLabel(self, obj, widget):
         geo_p = obj.parent().geometry()
         geo = obj.geometry()
         x, y, width, height = geo.x() + geo_p.x(), geo.y() + geo_p.y(), geo.width(), geo.height()
-        widget.setGeometry(QRect(x + 300, y + 2, width, height))
+        widget.setGeometry(QRect(x + 300, y, width, height))
         widget.setHidden(False)
 
     def hideLabel(self, widget):
         widget.setHidden(True)
 
+    # connect +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     def bt_clicked(self):
         self.win.treeView_type.selectionModel().selectionChanged.connect(self.on_treeView_selectionChanged)
         self.pageW.comboBoxNum.activated.connect(self.on_page_comboBox_changed)
@@ -143,33 +153,14 @@ class openUI(QMainWindow):
         tool = len(allImage)
         minNum = (page - 1) * num
         maxNum = page * num if tool > page * num else tool
-        self.add_item(allImage[minNum:maxNum])
+        self.add_items(allImage[minNum:maxNum])
 
     def on_treeView_selectionChanged(self):
         selStr = self.get_selection_treeView()
-        sys.stdout.write(selStr)
         if selStr not in self.allSel.keys():
             self.get_data(selStr)
-
-        self.initPage(selStr)
-
-    def get_data(self, selStr, isUpdata=True):
-        if isUpdata:
-            beG = u'typeG like "%{}%" '.format(selStr)
-            data = sql.queryItem(beG) or list()
-            self.allSel.setdefault(selStr, data)
-
-    def initPage(self, selStr=''):
-        if selStr and (not self.allSel.has_key(selStr)):
-            self.pageW.comboBoxNum.clear()
-            self.add_item(list())
-        else:
-            num = self.allSel[selStr].__len__()
-            pageNum = int(self.pageW.spin.currentText())
-            page = num / pageNum + 1
-            self.pageW.comboBoxNum.clear()
-            self.pageW.comboBoxNum.addItems([str(i) for i in range(1, page + 1)])
-            self.add_item(self.allSel[selStr][0:pageNum])
+        self.t.str_tree = selStr
+        self.t.run()
 
     def get_selection_treeView(self):
         indexs = self.win.treeView_type.selectedIndexes()
@@ -203,6 +194,30 @@ class openUI(QMainWindow):
     def show_asset_menu(self, pos):
         self.asset_menu.exec_(QCursor().pos())
 
+    def add_items(self, messageList):
+        widget = self.widget_other.objWidget
+        widget.clearAll()
+        map(lambda x: self.add_item(x), messageList)
+        widget.layout()
+
+    def add_item(self, i):
+        if self.widget_other.objWidget.Image_widget_list.has_key(i[0]):
+            wgt = self.widget_other.objWidget.Image_widget_list[i[0]]
+            wgt.update(*i)
+        else:
+            wgt = initUI.image_widget(*i)
+            wgt.clicked[int].connect(partial(self.set_image, wgt))
+            wgt.doubleClicked.connect(partial(self.dlgImage, wgt))
+            self.widget_other.objWidget.add_widget(wgt)
+        wgt.show()
+
+    # edit image plane and sql data +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    def get_data(self, selStr):
+        beG = u'typeG like "%{}%" '.format(selStr)
+        self.allSel[selStr] = sql.queryItem(beG) or list()
+        if self.keyword and self.keyword != 'search':
+            self.allSel[selStr] = [each for each in self.allSel[selStr] if self.keyword in each[2]]
+
     def asset_add(self):
         selTreeView = self.get_selection_treeView()
         if not selTreeView:
@@ -218,6 +233,7 @@ class openUI(QMainWindow):
         self.edDialog = editDialog.dialogItem(parent=self, conf='add', **kwg)
         if self.edDialog.exec_():
             self.updateSelTree_sql()
+            mUI.show_warning(u'添加成功！！！', 's')
 
     def asset_edit(self):
         if not self.get_selection_item():
@@ -235,6 +251,7 @@ class openUI(QMainWindow):
         self.edDialog = editDialog.dialogItem(parent=self, conf='edit', **kwg)
         if self.edDialog.exec_():
             self.updateSelTree_sql()
+            mUI.show_warning(u'编辑成功！！！', 's')
 
     def asset_del(self):
         sel = self.get_selection_item()
@@ -247,13 +264,14 @@ class openUI(QMainWindow):
         else:
             sql.deleteItem('ID="%s"' % sel.id)
             self.updateSelTree_sql()
-            mUI.show_warning(u'delect --- >> %s' % sel.chineseName, 's')
+            mUI.show_warning(u'删除成功 ： \n\t %s' % sel.chineseName, 's')
 
     def updateSelTree_sql(self):
         num = self.pageW.comboBoxNum.currentIndex()
         selStr = self.get_selection_treeView()
         self.get_data(selStr)
-        self.initPage(selStr)
+        self.t.str_tree = selStr
+        self.t.run()
         maxCount = self.pageW.comboBoxNum.maxCount()
         num = num if num <= maxCount else maxCount
         self.pageW.comboBoxNum.setCurrentIndex(num)
@@ -261,36 +279,13 @@ class openUI(QMainWindow):
 
     def setAllItem(self, sender):
         self.inP = sender
-        self.all_item = list()
-        sep = int(self.pageW.spin.currentText())
-        allNum = self.all_item.__len__()
-        page = allNum / sep + 1
-        self.pageW.comboBoxNum.clear()
-        self.pageW.comboBoxNum.addItems([str(i) for i in range(1, page + 1)])
-
-    def setWidget(self):
-        sep = int(self.pageW.spin.currentText())
-        page = int(self.pageW.comboBoxNum.currentText())
-        max_num = self.all_item.__len__()
-        showItem = self.all_item[(page - 1) * sep: max_num if page * sep > max_num else page * sep]
-        # self.add_item(showItem="")
-
-    def add_item(self, messageList):
-        widget = self.widget_other.objWidget
-        widget.clearAll()
-
-        for i in messageList:
-            if widget.Image_widget_list.has_key(i[0]):
-                wgt = widget.Image_widget_list[i[0]]
-                wgt.update(*i)
-            else:
-                wgt = initUI.image_widget(*i)
-                wgt.clicked[int].connect(partial(self.set_image, wgt))
-                wgt.doubleClicked.connect(partial(self.dlgImage, wgt))
-                widget.add_widget(wgt)
-            wgt.show()
-
-        widget.layout()
+        self.keyword = self.inP.objectName().split('_')[-1].toLower()
+        selStr = self.get_selection_treeView()
+        if not selStr:
+            return
+        self.get_data(selStr)
+        self.t.str_tree = selStr
+        self.t.run()
 
     def dlgImage(self, wgt):
         self.dlg = exUI.imageDialog(*wgt.imagePath)
@@ -318,9 +313,7 @@ class openUI(QMainWindow):
             for each in lList:
                 each.clear()
 
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     # add tray ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
     def add_tray(self):
         self.trayIcon = QSystemTrayIcon(self)
         self.trayIcon.setIcon(QIcon(icon_path('window_icon.png')))
